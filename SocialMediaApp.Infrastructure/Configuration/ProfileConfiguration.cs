@@ -37,37 +37,32 @@ public class ProfileConfiguration : IEntityTypeConfiguration<Profile>
 
         builder.HasOne(x => x.User)
             .WithOne(x => x.Profile)
-            .HasForeignKey<Profile>(x => x.UserID) 
+            .HasForeignKey<Profile>(x => x.UserID)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasMany(x=>x.Notifications)
-            .WithOne(x=>x.Profile)
-            .HasForeignKey(x=>x.ProfileID)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasMany(x=>x.Comments)
-            .WithOne(x=>x.Profile)
-            .HasForeignKey(x=>x.ProfileID)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasMany(x=>x.Likes)
-            .WithOne(x=>x.Profile)
+        builder.HasMany(x => x.Notifications)
+            .WithOne(x => x.Profile)
             .HasForeignKey(x => x.ProfileID)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasMany(x=>x.Retweets)
-            .WithOne(x=>x.Profile)
+        builder.HasMany(x => x.Comments)
+            .WithOne(x => x.Profile)
             .HasForeignKey(x => x.ProfileID)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(x => x.Retweets)
+            .WithOne(x => x.Profile)
+            .HasForeignKey(x => x.ProfileID)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasMany(x => x.UserConnections)
             .WithMany(x => x.Profiles)
             .UsingEntity<ConnectionProfile>();
 
-        builder.HasMany(x=>x.Tweets)
-            .WithOne(x=>x.Profile)
+        builder.HasMany(x => x.Tweets)
+            .WithOne(x => x.Profile)
              .HasForeignKey(x => x.ProfileID)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.ToTable("Profiles");
     }

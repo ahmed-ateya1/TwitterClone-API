@@ -24,12 +24,12 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
         builder.HasOne(x => x.ParentComment)
             .WithMany(x => x.Replies)
             .HasForeignKey(x => x.ParentCommentID)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction);
 
-        builder.HasMany(x => x.Likes)
-            .WithOne(x => x.Comment)
-            .HasForeignKey(x => x.CommentID)
-            .OnDelete(DeleteBehavior.Cascade);
+        builder.HasOne(x => x.Tweet)
+           .WithMany(x => x.Comments)
+           .HasForeignKey(x => x.TweetID)
+           .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasMany(x => x.Retweets)
             .WithOne(x => x.Comment)

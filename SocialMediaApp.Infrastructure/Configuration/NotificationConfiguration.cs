@@ -23,7 +23,7 @@ namespace SocialMediaApp.Infrastructure.Configuration
             builder.Property(x => x.Content)
                .IsRequired();
 
-            builder.Property(x=>x.CreatedAt)
+            builder.Property(x => x.CreatedAt)
                 .IsRequired();
 
             builder.ToTable("Notifications");

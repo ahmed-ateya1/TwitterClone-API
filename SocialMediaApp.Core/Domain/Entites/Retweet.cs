@@ -10,7 +10,7 @@ namespace SocialMediaApp.Core.Domain.Entites
     {
         public Guid RetweetID { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime? UpdatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
         public Guid ProfileID { get; set; }
         public Profile Profile { get; set; }
         public Guid TweetID { get; set; }

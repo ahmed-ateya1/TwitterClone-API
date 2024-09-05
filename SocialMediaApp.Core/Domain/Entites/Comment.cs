@@ -14,7 +14,7 @@ namespace SocialMediaApp.Core.Domain.Entites
         public long TotalComment { get; set; }
         public bool IsUpdated { get; set; } = false;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime? UpdatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         public Guid ProfileID { get; set; }
         public Profile Profile { get; set; }

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SocialMediaApp.Infrastructure.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser , ApplicationRole , Guid>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
     {
         public DbSet<Comment> Comments { get; set; }
         public DbSet<ConnectionProfile> ConnectionProfiles { get; set; }
@@ -22,6 +22,7 @@ namespace SocialMediaApp.Infrastructure.Data
         public DbSet<Tweet> Tweets { get; set; }
         public DbSet<TweetFiles> TweetsFiles { get; set; }
         public DbSet<UserConnections> UserConnections { get; set; }
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

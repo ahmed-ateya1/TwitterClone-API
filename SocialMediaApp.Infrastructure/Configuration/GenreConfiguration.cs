@@ -14,7 +14,7 @@ namespace SocialMediaApp.Infrastructure.Configuration
         public void Configure(EntityTypeBuilder<Genre> builder)
         {
             builder.HasKey(x => x.GenreID);
-            builder.Property(x=>x.GenreID)
+            builder.Property(x => x.GenreID)
                 .ValueGeneratedNever();
 
             builder.ToTable("Genres");

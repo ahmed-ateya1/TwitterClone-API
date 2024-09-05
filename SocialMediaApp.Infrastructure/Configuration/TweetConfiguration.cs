@@ -15,7 +15,7 @@ namespace SocialMediaApp.Infrastructure.Configuration
         {
             builder.HasKey(x => x.TweetID);
 
-            builder.Property(x=>x.TweetID)
+            builder.Property(x => x.TweetID)
                 .ValueGeneratedNever();
 
             builder.Property(x => x.Content)
@@ -24,13 +24,13 @@ namespace SocialMediaApp.Infrastructure.Configuration
             builder.Property(x => x.TotalLikes)
                 .IsRequired();
 
-            builder.Property(x=>x.TotalRetweets)
+            builder.Property(x => x.TotalRetweets)
                 .IsRequired();
 
-            builder.Property(x=>x.TotalComments)
+            builder.Property(x => x.TotalComments)
                 .IsRequired();
 
-            builder.Property(x=>x.CreatedAt)
+            builder.Property(x => x.CreatedAt)
                 .IsRequired();
 
             builder.Property(x => x.UpdatedAt)
@@ -41,25 +41,15 @@ namespace SocialMediaApp.Infrastructure.Configuration
             .HasForeignKey(x => x.TweetID)
             .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasMany(x => x.Comments)
-               .WithOne(x => x.Tweet)
-               .HasForeignKey(x => x.TweetID)
-               .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasMany(x=>x.Files)
-                .WithOne(x=>x.Tweet)
+            builder.HasMany(x => x.Files)
+                .WithOne(x => x.Tweet)
                 .HasForeignKey(x => x.TweetID)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(x => x.Genre)
                 .WithMany(x => x.Tweets)
-                .HasForeignKey(x=>x.GenreID)
+                .HasForeignKey(x => x.GenreID)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            builder.HasMany(x=>x.Likes)
-                .WithOne(x=>x.Tweet)
-                .HasForeignKey(x => x.TweetID)
-                .OnDelete(DeleteBehavior.Cascade);
 
 
             builder.ToTable("Tweets");
