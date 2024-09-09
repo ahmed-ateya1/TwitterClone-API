@@ -57,13 +57,20 @@ namespace SocialMediaApp.API.StartupExtensions
                        ClockSkew = TimeSpan.Zero
                    };
                });
+            services.Configure<DataProtectionTokenProviderOptions>(options =>
+            {
+                options.TokenLifespan = TimeSpan.FromHours(1);
+            });
             services.Configure<JwtDTO>(configuration.GetSection("JWT"));
+            services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
+
             services.AddScoped<IAuthenticationServices, AuthenticationServices>();
+            services.AddTransient<IMailingService, MailingService>();
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "TestApiJWT", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Social Media APP", Version = "v1" });
                 c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "api.xml"));
             });
             return services;

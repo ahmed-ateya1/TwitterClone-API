@@ -1,7 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
+using SocialMediaApp.Core.Domain.IdentityEntites;
 using SocialMediaApp.Core.DTO;
 using SocialMediaApp.Core.ServicesContract;
+using SocialMediaApp.Infrastructure.Data;
 
 namespace SocialMediaApp.API.Controllers
 {
@@ -13,14 +18,18 @@ namespace SocialMediaApp.API.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAuthenticationServices _authenticationServices;
+        private readonly IMailingService _mailingService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountController"/> class.
         /// </summary>
         /// <param name="authenticationServices">The authentication services.</param>
-        public AccountController(IAuthenticationServices authenticationServices)
+        public AccountController(IAuthenticationServices authenticationServices , IMailingService mailingService,UserManager<ApplicationUser> userManager )
         {
             _authenticationServices = authenticationServices;
+            _mailingService = mailingService;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -133,6 +142,59 @@ namespace SocialMediaApp.API.Controllers
             if (!result)
                 return BadRequest("Invalid token");
 
+            return Ok();
+        }
+        /// <summary>
+        /// Initiates the forgot password process by generating a reset token and sending it to the user's email.
+        /// </summary>
+        /// <param name="forgotPassword">The data transfer object containing the user's email and client URI.</param>
+        /// <returns>An <see cref="IActionResult"/> indicating the result of the operation. Returns 200 OK if the email is sent successfully, otherwise returns 400 BadRequest.</returns>
+        [HttpPost("forgotPassword")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDTO forgotPassword)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var user = await _userManager.FindByEmailAsync(forgotPassword.Email!);
+            if (user == null)
+                return BadRequest("Invalid Request");
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            var param = new Dictionary<string, string?>
+            {
+                {"token", token},
+                {"email", forgotPassword.Email}
+            };
+            var callback = QueryHelpers.AddQueryString(forgotPassword.ClientUri!, param);
+
+            await _mailingService.SendMessageAsync(user.Email!, "Reset password", callback, null);
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// Resets the user's password using the provided reset token and new password.
+        /// </summary>
+        /// <param name="resetPassword">The data transfer object containing the user's email, reset token, and new password.</param>
+        /// <returns>An <see cref="IActionResult"/> indicating the result of the operation. Returns 200 OK if the password is reset successfully, otherwise returns 400 BadRequest with the errors.</returns>
+        [HttpPost("resetPassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDTO resetPassword)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var user = await _userManager.FindByEmailAsync(resetPassword.Email);
+            if (user == null)
+                return BadRequest("Invalid Request");
+
+            var result = await _userManager.ResetPasswordAsync(user, resetPassword.Token, resetPassword.Password!);
+
+            if (!result.Succeeded)
+            {
+                var errors = result.Errors.Select(x => x.Description);
+                return BadRequest(new { Errors = errors });
+            }
             return Ok();
         }
 
