@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -9,6 +9,8 @@
   <ItemGroup>
     <Folder Include="Helper\" />
     <Folder Include="MappingProfile\" />
+    <Folder Include="Services\" />
+    <Folder Include="ServicesContract\" />
     <Folder Include="RepositoriesContract\" />
   </ItemGroup>
 
