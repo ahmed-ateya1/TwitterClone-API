@@ -12,7 +12,6 @@
     <Folder Include="MappingProfile\" />
     <Folder Include="Services\" />
     <Folder Include="ServicesContract\" />
-    <Folder Include="RepositoriesContract\" />
   </ItemGroup>
 
   <ItemGroup>
