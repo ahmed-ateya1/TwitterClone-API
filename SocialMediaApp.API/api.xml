@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SocialMediaApp.API</name>
+    </assembly>
+    <members>
+        <member name="T:SocialMediaApp.API.Controllers.AccountController">
+            <summary>
+            Controller for managing user account operations such as registration, login, role assignment, token refreshing, and token revocation.
+            </summary>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.AccountController.#ctor(SocialMediaApp.Core.ServicesContract.IAuthenticationServices,SocialMediaApp.Core.ServicesContract.IMailingService,Microsoft.AspNetCore.Identity.UserManager{SocialMediaApp.Core.Domain.IdentityEntites.ApplicationUser})">
+            <summary>
+            Initializes a new instance of the <see cref="T:SocialMediaApp.API.Controllers.AccountController"/> class.
+            </summary>
+            <param name="authenticationServices">The authentication services.</param>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.AccountController.RegisterAsync(SocialMediaApp.Core.DTO.RegisterDTO)">
+            <summary>
+            Registers a new user.
+            </summary>
+            <param name="registerDTO">The registration data transfer object containing user details.</param>
+            <returns>An <see cref="T:Microsoft.AspNetCore.Mvc.ActionResult"/> containing the authentication response.</returns>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.AccountController.LoginAsync(SocialMediaApp.Core.DTO.LoginDTO)">
+            <summary>
+            Logs in an existing user.
+            </summary>
+            <param name="loginDTO">The login data transfer object containing user credentials.</param>
+            <returns>An <see cref="T:Microsoft.AspNetCore.Mvc.ActionResult"/> containing the authentication response.</returns>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.AccountController.AddRoleAsync(SocialMediaApp.Core.DTO.AddRoleDTO)">
+            <summary>
+            Adds a role to an existing user.
+            </summary>
+            <param name="model">The data transfer object containing role and user information.</param>
+            <returns>An <see cref="T:Microsoft.AspNetCore.Mvc.IActionResult"/> indicating the result of the operation.</returns>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.AccountController.RefreshToken">
+            <summary>
+            Refreshes the JWT token using a valid refresh token.
+            </summary>
+            <returns>An <see cref="T:Microsoft.AspNetCore.Mvc.IActionResult"/> containing the new authentication response.</returns>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.AccountController.RevokeToken(SocialMediaApp.Core.DTO.RevokTokenDTO)">
+            <summary>
+            Revokes a specific refresh token or the one stored in the request cookies.
+            </summary>
+            <param name="revokTokenDTO">The data transfer object containing the token to revoke.</param>
+            <returns>An <see cref="T:Microsoft.AspNetCore.Mvc.IActionResult"/> indicating the result of the revocation.</returns>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.AccountController.ForgotPassword(SocialMediaApp.Core.DTO.ForgotPasswordDTO)">
+            <summary>
+            Initiates the forgot password process by generating a reset token and sending it to the user's email.
+            </summary>
+            <param name="forgotPassword">The data transfer object containing the user's email and client URI.</param>
+            <returns>An <see cref="T:Microsoft.AspNetCore.Mvc.IActionResult"/> indicating the result of the operation. Returns 200 OK if the email is sent successfully, otherwise returns 400 BadRequest.</returns>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.AccountController.ResetPassword(SocialMediaApp.Core.DTO.ResetPasswordDTO)">
+            <summary>
+            Resets the user's password using the provided reset token and new password.
+            </summary>
+            <param name="resetPassword">The data transfer object containing the user's email, reset token, and new password.</param>
+            <returns>An <see cref="T:Microsoft.AspNetCore.Mvc.IActionResult"/> indicating the result of the operation. Returns 200 OK if the password is reset successfully, otherwise returns 400 BadRequest with the errors.</returns>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.AccountController.SetRefreshToken(System.String,System.DateTime)">
+            <summary>
+            Sets the refresh token in an HTTP-only cookie.
+            </summary>
+            <param name="refreshToken">The refresh token to store.</param>
+            <param name="expires">The expiration date and time of the refresh token.</param>
+        </member>
+    </members>
+</doc>

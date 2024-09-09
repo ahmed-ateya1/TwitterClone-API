@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using SocialMediaApp.Core.Domain.Entites;
+using SocialMediaApp.Core.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,5 +13,6 @@ namespace SocialMediaApp.Core.Domain.IdentityEntites
     {
         public Guid ProfileID { get; set; }
         public Profile Profile { get; set; }
+        public ICollection<RefreshToken>? RefreshTokens { get; set; }
     }
 }
