@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using MimeKit;
-using SocialMediaApp.Core.DTO;
+using SocialMediaApp.Core.DTO.AuthenticationDTO;
 using SocialMediaApp.Core.ServicesContract;
 using System;
 using System.Collections.Generic;

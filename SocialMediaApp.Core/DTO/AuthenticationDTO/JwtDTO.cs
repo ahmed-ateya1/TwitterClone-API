@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SocialMediaApp.Core.DTO
+namespace SocialMediaApp.Core.DTO.AuthenticationDTO
 {
     public class JwtDTO
     {

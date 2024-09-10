@@ -5,14 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SocialMediaApp.Core.DTO
+namespace SocialMediaApp.Core.DTO.AuthenticationDTO
 {
-    public class ForgotPasswordDTO
+    public class AddRoleDTO
     {
         [Required]
-        [EmailAddress]
-        public string? Email { get; set; }  
+        public Guid UserID { get; set; }
         [Required]
-        public string? ClientUri { get; set; }
+
+        public string RoleName { get; set; } = string.Empty;
     }
 }

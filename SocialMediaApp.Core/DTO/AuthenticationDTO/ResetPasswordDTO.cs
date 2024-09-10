@@ -5,14 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SocialMediaApp.Core.DTO
+namespace SocialMediaApp.Core.DTO.AuthenticationDTO
 {
     public class ResetPasswordDTO
     {
-        [Required(ErrorMessage ="Password is required")]
+        [Required(ErrorMessage = "Password is required")]
         public string? Password { get; set; }
         [Required]
-        [Compare("Password" , ErrorMessage = "Password and confirmation password is not match.")]
+        [Compare("Password", ErrorMessage = "Password and confirmation password is not match.")]
         public string? ConfirmPassword { get; set; }
 
         public string? Email { get; set; }

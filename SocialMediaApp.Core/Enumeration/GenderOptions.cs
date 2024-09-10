@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SocialMediaApp.Core.DTO
+namespace SocialMediaApp.Core.Enumeration
 {
-    public class RevokTokenDTO
+    public enum GenderOptions
     {
-        public string Token { get; set; }
+        MALE,
+        FEMALE
     }
 }

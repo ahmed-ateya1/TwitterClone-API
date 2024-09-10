@@ -12,11 +12,15 @@ namespace SocialMediaApp.Core.Domain.Entites
         public Guid ProfileID { get; set; }
         public string ProfileImgURL { get; set; }
         public string ProfileBackgroundURL { get; set; }
+        public string FullName { get; set; }
         public string Gender { get; set; }
+        public string Bio { get; set; }
         public DateTime BirthDate { get; set; }
         public long TotalFollowing {  get; set; }
         public long TotalFollowers { get; set; }
         public long TotalTweets {  get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
         public Guid UserID { get; set; }
         public ApplicationUser User { get; set; }
         public ICollection<Tweet> Tweets { get; set; } = new List<Tweet>();

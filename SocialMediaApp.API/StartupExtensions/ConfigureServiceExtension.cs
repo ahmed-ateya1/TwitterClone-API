@@ -10,8 +10,12 @@ using System.Text;
 using SocialMediaApp.Core.ServicesContract;
 using SocialMediaApp.Core.Services;
 using Microsoft.Extensions.Configuration;
-using SocialMediaApp.Core.DTO;
 using Microsoft.OpenApi.Models;
+using SocialMediaApp.Core.DTO.AuthenticationDTO;
+using SocialMediaApp.API.FileServices;
+using SocialMediaApp.Core.MappingProfile.ProfileMapping;
+using SocialMediaApp.Core.RepositoriesContract;
+using SocialMediaApp.Infrastructure.Repositories;
 
 namespace SocialMediaApp.API.StartupExtensions
 {
@@ -61,11 +65,22 @@ namespace SocialMediaApp.API.StartupExtensions
             {
                 options.TokenLifespan = TimeSpan.FromHours(1);
             });
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(policy =>
+                {
+                    policy.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod();
+                });
+            });
             services.Configure<JwtDTO>(configuration.GetSection("JWT"));
             services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
 
             services.AddScoped<IAuthenticationServices, AuthenticationServices>();
             services.AddTransient<IMailingService, MailingService>();
+            services.AddScoped<IFileServices, FileService>();
+            services.AddScoped<IProfileRepository, ProfileRepository>();
+            services.AddScoped<IProfileServices, ProfileServices>();
+            services.AddAutoMapper(typeof(ProfileConfig));
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(c =>

@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace SocialMediaApp.Core.DTO
+namespace SocialMediaApp.Core.DTO.AuthenticationDTO
 {
     public class AuthenticationResponse
     {

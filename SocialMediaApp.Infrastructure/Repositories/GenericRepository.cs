@@ -23,54 +23,69 @@ namespace SocialMediaApp.Infrastructure.Repositories
 
         public async Task<T> CreateAsync(T model)
         {
+            if (model == null)
+                throw new ArgumentNullException(nameof(model));
+
             await _dbSet.AddAsync(model);
+            await SaveAsync();
             return model;
         }
 
         public async Task<bool> DeleteAsync(T model)
         {
+            if (model == null)
+                return false;
+
             _dbSet.Remove(model);
+            await SaveAsync();
             return true;
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null, string includeProperties = "",Expression<Func<T,T>>? orderBy = null, int pageIndex = 1, int pageSize = 10)
+        public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null, string includeProperties = "", Expression<Func<T, T>>? orderBy = null, int pageIndex = 1, int pageSize = 10)
         {
             IQueryable<T> query = _dbSet;
 
             if (filter != null)
                 query = query.Where(filter);
 
-            foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            if (!string.IsNullOrEmpty(includeProperties))
             {
-                query = query.Include(includeProperty);
+                foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProperty);
+                }
             }
+
             if (orderBy != null)
                 query = query.OrderBy(orderBy);
 
-            return await query.Skip(((pageIndex - 1) * pageSize)).Take(pageSize).ToListAsync();
+            return await query.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
         }
 
         public async Task<T> GetByAsync(Expression<Func<T, bool>>? filter = null, bool isTracked = true, string includeProperties = "")
         {
             IQueryable<T> query = _dbSet;
+
             if (!isTracked)
                 query = query.AsNoTracking();
+
             if (filter != null)
                 query = query.Where(filter);
 
-            foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            if (!string.IsNullOrEmpty(includeProperties))
             {
-                query = query.Include(includeProperty);
+                foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProperty);
+                }
             }
 
             return await query.FirstOrDefaultAsync(filter);
         }
 
-        public async Task<T> UpdateAsync(T model)
+        public async Task SaveAsync()
         {
-            _db.Entry(model).State = EntityState.Modified;
-            return model;
+            await _db.SaveChangesAsync();
         }
-    
     }
 }

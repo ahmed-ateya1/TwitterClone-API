@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using SocialMediaApp.Core.Domain.IdentityEntites;
-using SocialMediaApp.Core.DTO;
+using SocialMediaApp.Core.DTO.AuthenticationDTO;
 using SocialMediaApp.Core.ServicesContract;
 using SocialMediaApp.Infrastructure.Data;
 

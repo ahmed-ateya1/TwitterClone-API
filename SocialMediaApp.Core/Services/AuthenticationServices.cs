@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SocialMediaApp.Core.Domain.IdentityEntites;
-using SocialMediaApp.Core.DTO;
+using SocialMediaApp.Core.DTO.AuthenticationDTO;
 using SocialMediaApp.Core.Enumeration;
 using SocialMediaApp.Core.ServicesContract;
 using System;

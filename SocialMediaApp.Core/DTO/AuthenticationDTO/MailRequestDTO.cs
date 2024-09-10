@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SocialMediaApp.Core.DTO
+namespace SocialMediaApp.Core.DTO.AuthenticationDTO
 {
     public class MailRequestDTO
     {
@@ -16,6 +16,6 @@ namespace SocialMediaApp.Core.DTO
         public string Subject { get; set; }
         [Required]
         public string Body { get; set; }
-        public IList<IFormFile>? Attachment {  get; set; }
+        public IList<IFormFile>? Attachment { get; set; }
     }
 }

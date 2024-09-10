@@ -15,21 +15,21 @@
             </summary>
             <param name="authenticationServices">The authentication services.</param>
         </member>
-        <member name="M:SocialMediaApp.API.Controllers.AccountController.RegisterAsync(SocialMediaApp.Core.DTO.RegisterDTO)">
+        <member name="M:SocialMediaApp.API.Controllers.AccountController.RegisterAsync(SocialMediaApp.Core.DTO.AuthenticationDTO.RegisterDTO)">
             <summary>
             Registers a new user.
             </summary>
             <param name="registerDTO">The registration data transfer object containing user details.</param>
             <returns>An <see cref="T:Microsoft.AspNetCore.Mvc.ActionResult"/> containing the authentication response.</returns>
         </member>
-        <member name="M:SocialMediaApp.API.Controllers.AccountController.LoginAsync(SocialMediaApp.Core.DTO.LoginDTO)">
+        <member name="M:SocialMediaApp.API.Controllers.AccountController.LoginAsync(SocialMediaApp.Core.DTO.AuthenticationDTO.LoginDTO)">
             <summary>
             Logs in an existing user.
             </summary>
             <param name="loginDTO">The login data transfer object containing user credentials.</param>
             <returns>An <see cref="T:Microsoft.AspNetCore.Mvc.ActionResult"/> containing the authentication response.</returns>
         </member>
-        <member name="M:SocialMediaApp.API.Controllers.AccountController.AddRoleAsync(SocialMediaApp.Core.DTO.AddRoleDTO)">
+        <member name="M:SocialMediaApp.API.Controllers.AccountController.AddRoleAsync(SocialMediaApp.Core.DTO.AuthenticationDTO.AddRoleDTO)">
             <summary>
             Adds a role to an existing user.
             </summary>
@@ -42,21 +42,21 @@
             </summary>
             <returns>An <see cref="T:Microsoft.AspNetCore.Mvc.IActionResult"/> containing the new authentication response.</returns>
         </member>
-        <member name="M:SocialMediaApp.API.Controllers.AccountController.RevokeToken(SocialMediaApp.Core.DTO.RevokTokenDTO)">
+        <member name="M:SocialMediaApp.API.Controllers.AccountController.RevokeToken(SocialMediaApp.Core.DTO.AuthenticationDTO.RevokTokenDTO)">
             <summary>
             Revokes a specific refresh token or the one stored in the request cookies.
             </summary>
             <param name="revokTokenDTO">The data transfer object containing the token to revoke.</param>
             <returns>An <see cref="T:Microsoft.AspNetCore.Mvc.IActionResult"/> indicating the result of the revocation.</returns>
         </member>
-        <member name="M:SocialMediaApp.API.Controllers.AccountController.ForgotPassword(SocialMediaApp.Core.DTO.ForgotPasswordDTO)">
+        <member name="M:SocialMediaApp.API.Controllers.AccountController.ForgotPassword(SocialMediaApp.Core.DTO.AuthenticationDTO.ForgotPasswordDTO)">
             <summary>
             Initiates the forgot password process by generating a reset token and sending it to the user's email.
             </summary>
             <param name="forgotPassword">The data transfer object containing the user's email and client URI.</param>
             <returns>An <see cref="T:Microsoft.AspNetCore.Mvc.IActionResult"/> indicating the result of the operation. Returns 200 OK if the email is sent successfully, otherwise returns 400 BadRequest.</returns>
         </member>
-        <member name="M:SocialMediaApp.API.Controllers.AccountController.ResetPassword(SocialMediaApp.Core.DTO.ResetPasswordDTO)">
+        <member name="M:SocialMediaApp.API.Controllers.AccountController.ResetPassword(SocialMediaApp.Core.DTO.AuthenticationDTO.ResetPasswordDTO)">
             <summary>
             Resets the user's password using the provided reset token and new password.
             </summary>
@@ -69,6 +69,18 @@
             </summary>
             <param name="refreshToken">The refresh token to store.</param>
             <param name="expires">The expiration date and time of the refresh token.</param>
+        </member>
+        <member name="T:SocialMediaApp.API.Controllers.ProfileController">
+            <summary>
+            Controller for managing user profiles.
+            </summary>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.ProfileController.CreateProfile(SocialMediaApp.Core.DTO.ProfileDTO.ProfileAddRequest)">
+            <summary>
+            Creates a new profile.
+            </summary>
+            <param name="profileAdd">The profile data.</param>
+            <returns>The created profile.</returns>
         </member>
     </members>
 </doc>
