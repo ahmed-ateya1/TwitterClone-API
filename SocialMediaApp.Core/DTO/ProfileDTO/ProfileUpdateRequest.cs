@@ -11,11 +11,14 @@ namespace SocialMediaApp.Core.DTO.ProfileDTO
 {
     public class ProfileUpdateRequest
     {
+        public Guid ProfileID { get; set; }
         [Required(ErrorMessage = "First name is required")]
         public string? FirstName { get; set; }
 
         [Required(ErrorMessage = "Last name is required")]
         public string? LastName { get; set; }
+        [Required(ErrorMessage = "Bio is required")]
+        public string? Bio { get; set; }
 
         [Required(ErrorMessage = "Profile image is required")]
         public IFormFile ProfileImg { get; set; }
@@ -23,12 +26,9 @@ namespace SocialMediaApp.Core.DTO.ProfileDTO
         [Required(ErrorMessage = "Profile background is required")]
         public IFormFile ProfileBackground { get; set; }
 
-        [Required(ErrorMessage = "Gender is required")]
         public GenderOptions Gender { get; set; } = GenderOptions.MALE;
 
         [Required(ErrorMessage = "Birth date is required")]
         public DateTime BirthDate { get; set; }
-
-        public Guid UserID { get; set; }
     }
 }

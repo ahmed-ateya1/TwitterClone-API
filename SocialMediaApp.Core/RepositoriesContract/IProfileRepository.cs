@@ -9,5 +9,6 @@ namespace SocialMediaApp.Core.RepositoriesContract
 {
     public interface IProfileRepository : IGenericRepository<Profile>
     {
+        Task<Profile> UpdateAsync(Profile profile);
     }
 }

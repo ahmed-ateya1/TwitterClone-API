@@ -29,6 +29,7 @@ namespace SocialMediaApp.Core.DTO.ProfileDTO
         public GenderOptions Gender { get; set; } = GenderOptions.MALE;
 
         [Required(ErrorMessage = "Birth date is required")]
+        [DataType(DataType.Date)]
         public DateTime BirthDate { get; set; }
     }
 }

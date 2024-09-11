@@ -12,8 +12,8 @@ using SocialMediaApp.Infrastructure.Data;
 namespace SocialMediaApp.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240910045200_UpdateProfileTableV2")]
-    partial class UpdateProfileTableV2
+    [Migration("20240910152536_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
