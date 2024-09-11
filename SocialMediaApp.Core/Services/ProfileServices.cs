@@ -104,7 +104,10 @@ namespace SocialMediaApp.Core.Services
                     return false;
                 }
             }
-
+            await Task.WhenAll(
+               _fileServices.DeleteFile(profile.ProfileImgURL),
+               _fileServices.DeleteFile(profile.ProfileBackgroundURL)
+           );
             var result = await _profileRepository.DeleteAsync(profile);
 
             if (result)
