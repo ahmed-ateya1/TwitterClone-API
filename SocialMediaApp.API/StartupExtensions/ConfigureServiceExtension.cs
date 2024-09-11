@@ -16,6 +16,8 @@ using SocialMediaApp.API.FileServices;
 using SocialMediaApp.Core.MappingProfile.ProfileMapping;
 using SocialMediaApp.Core.RepositoriesContract;
 using SocialMediaApp.Infrastructure.Repositories;
+using SocialMediaApp.Core.IUnitOfWorkConfig;
+using SocialMediaApp.Infrastructure.UnitOfWorkConfig;
 
 namespace SocialMediaApp.API.StartupExtensions
 {
@@ -75,6 +77,7 @@ namespace SocialMediaApp.API.StartupExtensions
             services.Configure<JwtDTO>(configuration.GetSection("JWT"));
             services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
 
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IAuthenticationServices, AuthenticationServices>();
             services.AddTransient<IMailingService, MailingService>();
             services.AddScoped<IFileServices, FileService>();

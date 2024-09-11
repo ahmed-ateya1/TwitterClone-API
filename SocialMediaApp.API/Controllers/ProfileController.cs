@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SocialMediaApp.Core.DTO;
 using SocialMediaApp.Core.DTO.ProfileDTO;
+using SocialMediaApp.Core.IUnitOfWorkConfig;
 using SocialMediaApp.Core.ServicesContract;
 using System.Net;
 
