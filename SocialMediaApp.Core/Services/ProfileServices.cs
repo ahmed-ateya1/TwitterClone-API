@@ -94,7 +94,28 @@ namespace SocialMediaApp.Core.Services
                 _logger.LogWarning("Profile with ID {ProfileID} not found for deletion.", id);
                 return false;
             }
+
             var user = profile.User;
+
+            try
+            {
+                await Task.WhenAll(
+                    _fileServices.DeleteFile(profile.ProfileImgURL),
+                    _fileServices.DeleteFile(profile.ProfileBackgroundURL)
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while deleting profile images for Profile ID {ProfileID}.", id);
+            }
+
+            var profileDeleted = await _profileRepository.DeleteAsync(profile);
+
+            if (!profileDeleted)
+            {
+                _logger.LogError("Failed to delete profile with ID {ProfileID}.", id);
+                return false;
+            }
             if (user != null)
             {
                 var userResult = await _userManager.DeleteAsync(user);
@@ -104,25 +125,10 @@ namespace SocialMediaApp.Core.Services
                     return false;
                 }
             }
-            await Task.WhenAll(
-               _fileServices.DeleteFile(profile.ProfileImgURL),
-               _fileServices.DeleteFile(profile.ProfileBackgroundURL)
-           );
-            var result = await _profileRepository.DeleteAsync(profile);
 
-            if (result)
-            {
-                _logger.LogInformation("Profile with ID {ProfileID} deleted successfully.", id);
-            }
-            else
-            {
-                _logger.LogError("Failed to delete profile with ID {ProfileID}.", id);
-            }
-
-            return result;
+            _logger.LogInformation("Profile with ID {ProfileID} and associated user deleted successfully.", id);
+            return true;
         }
-
-
         public async Task<ProfileResponse> GetProfileByAsync(Expression<Func<SocialMediaApp.Core.Domain.Entites.Profile, bool>> expression, bool IsTracked = true)
         {
             var profile = await _profileRepository.GetByAsync(expression, IsTracked , "User");
