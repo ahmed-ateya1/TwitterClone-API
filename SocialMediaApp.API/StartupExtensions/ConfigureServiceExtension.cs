@@ -13,11 +13,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.OpenApi.Models;
 using SocialMediaApp.Core.DTO.AuthenticationDTO;
 using SocialMediaApp.API.FileServices;
-using SocialMediaApp.Core.MappingProfile.ProfileMapping;
 using SocialMediaApp.Core.RepositoriesContract;
 using SocialMediaApp.Infrastructure.Repositories;
 using SocialMediaApp.Core.IUnitOfWorkConfig;
 using SocialMediaApp.Infrastructure.UnitOfWorkConfig;
+using SocialMediaApp.Core.MappingProfile;
 
 namespace SocialMediaApp.API.StartupExtensions
 {
@@ -83,6 +83,12 @@ namespace SocialMediaApp.API.StartupExtensions
             services.AddScoped<IFileServices, FileService>();
             services.AddScoped<IProfileRepository, ProfileRepository>();
             services.AddScoped<IProfileServices, ProfileServices>();
+            services.AddScoped<IGenreRepository, GenreRepository>();
+            services.AddScoped<IGenreServces, GenreServces>();
+            services.AddScoped<ITweetFilesRepository, TweetFilesRepository>();
+            services.AddScoped<ITweetFilesServices, TweetFilesServices>();
+            services.AddScoped<ITweetServices , TweetServices>();
+            services.AddScoped<ITweetRepositroy , TweetRepository>();
             services.AddAutoMapper(typeof(ProfileConfig));
             services.AddControllers();
             services.AddEndpointsApiExplorer();

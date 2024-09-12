@@ -91,7 +91,7 @@ namespace SocialMediaApp.API.Controllers
         /// </summary>
         /// <param name="profileUpdate">The updated profile data.</param>
         /// <returns>The updated profile.</returns>
-        [HttpPost("updateProfile")]
+        [HttpPut("updateProfile")]
         public async Task<ActionResult<ApiResponse>> UpdateProfile([FromForm] ProfileUpdateRequest profileUpdate)
         {
             _logger.LogInformation("UpdateProfile method called");
@@ -175,7 +175,7 @@ namespace SocialMediaApp.API.Controllers
             try
             {
                 var profile = await _profileService.GetProfileByAsync(x => x.ProfileID == id);
-                if(profile == null)
+                if (profile == null)
                 {
                     return BadRequest(new ApiResponse
                     {
@@ -268,5 +268,79 @@ namespace SocialMediaApp.API.Controllers
             }
 
         }
+
+        /// <summary>
+        /// Gets a profile by user ID.
+        /// </summary>
+        /// <param name="userId">The ID of the user.</param>
+        /// <returns>The profile.</returns>
+        [HttpGet("getProfileByUserId/{userId}")]
+        public async Task<ActionResult<ApiResponse>> GetProfileByUserId(Guid userId)
+        {
+            if (Guid.Empty == userId)
+            {
+                return BadRequest(new ApiResponse
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    IsSuccess = false,
+                    Messages = "User ID is required"
+                });
+            }
+            try
+            {
+                var profile = await _profileService.GetProfileByAsync(x => x.UserID == userId);
+
+                if (profile == null)
+                {
+                    return BadRequest(new ApiResponse
+                    {
+                        StatusCode = HttpStatusCode.BadRequest,
+                        IsSuccess = false,
+                        Messages = "Profile not found"
+                    });
+                }
+                return Ok(new ApiResponse
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    IsSuccess = true,
+                    Result = profile,
+                    Messages = "Profile found"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, new ApiResponse
+                {
+                    StatusCode = HttpStatusCode.InternalServerError,
+                    IsSuccess = false,
+                    Messages = "An error occurred while getting the profile"
+                });
+            }
+
+        }
+
+
+        /// <summary>
+        /// Retrieves a paginated list of profiles from the system.
+        /// </summary>
+        /// <param name="pageIndex">The index of the page to retrieve. Defaults to 1.</param>
+        /// <param name="pageSize">The number of profiles per page. Defaults to 10.</param>
+        /// <returns>
+        /// An <see cref="ActionResult"/> containing an <see cref="ApiResponse"/> with the status code, success flag, 
+        /// result containing the list of profiles, and a message indicating the result.
+        /// </returns>
+        [HttpGet("getProfiles")]
+        public async Task<ActionResult<ApiResponse>> GetProfiles(int pageIndex = 1, int pageSize = 10)
+        {
+            var profiles = await _profileService.GetAllAsync(pageIndex, pageSize);
+            return Ok(new ApiResponse
+            {
+                StatusCode = HttpStatusCode.OK,
+                IsSuccess = true,
+                Result = profiles,
+                Messages = "Profiles found"
+            });
+        }
+
     }
 }

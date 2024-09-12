@@ -156,6 +156,13 @@ namespace SocialMediaApp.Core.Services
             }
         }
 
+        public async Task<IEnumerable<ProfileResponse>> GetAllAsync(int pageIndex = 1, int pageSize = 10)
+        {
+            var profiles = await _unitOfWork.Repository<SocialMediaApp.Core.Domain.Entites.Profile>().GetAllAsync(null, "", null, pageIndex, pageSize);
+            return _mapper.Map<IEnumerable<ProfileResponse>>(profiles);
+        }
+
+
         public async Task<ProfileResponse> GetProfileByAsync(Expression<Func<SocialMediaApp.Core.Domain.Entites.Profile, bool>> expression, bool IsTracked = true)
         {
             var profile = await _unitOfWork.Repository<SocialMediaApp.Core.Domain.Entites.Profile>().GetByAsync(expression, IsTracked, "User");

@@ -13,9 +13,8 @@ namespace SocialMediaApp.Infrastructure.Configuration
     {
         public void Configure(EntityTypeBuilder<TweetFiles> builder)
         {
-            builder.HasKey(x => x.TweetID);
-            builder.Property(x => x.TweetID)
-                .ValueGeneratedNever();
+            builder.HasKey(x=>x.TweetFilesID);
+            builder.Property(x => x.TweetFilesID).ValueGeneratedNever();
             builder.ToTable("TweetFiles");
         }
     }

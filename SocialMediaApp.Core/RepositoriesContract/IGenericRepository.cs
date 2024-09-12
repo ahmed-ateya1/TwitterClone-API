@@ -9,10 +9,12 @@ namespace SocialMediaApp.Core.RepositoriesContract
 {
     public interface IGenericRepository <T> where T : class
     {
-        Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null, string includeProperties = "", Expression<Func<T, T>>? orderBy = null , int pageIndex = 1, int pageSize = 10);
+        Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null, string includeProperties = "", Expression<Func<T, object>>? orderBy = null, int pageIndex = 1, int pageSize = 10);
         Task<T> GetByAsync(Expression<Func<T, bool>>? filter = null, bool isTracked = true, string includeProperties = "");
         Task<T> CreateAsync(T model);
+        Task AddRangeAsync(IEnumerable<T> model);
         Task<bool> DeleteAsync(T model);
+        void Detach(T entity);
         Task SaveAsync();
     }
 }

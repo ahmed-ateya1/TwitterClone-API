@@ -21,6 +21,12 @@ namespace SocialMediaApp.Infrastructure.Repositories
             _dbSet = _db.Set<T>();
         }
 
+        public async Task AddRangeAsync(IEnumerable<T> model)
+        {
+            await _dbSet.AddRangeAsync(model);
+            await SaveAsync();
+        }
+
         public async Task<T> CreateAsync(T model)
         {
             if (model == null)
@@ -41,7 +47,12 @@ namespace SocialMediaApp.Infrastructure.Repositories
             return true;
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null, string includeProperties = "", Expression<Func<T, T>>? orderBy = null, int pageIndex = 1, int pageSize = 10)
+        public void Detach(T entity)
+        {
+            _db.Entry(entity).State = EntityState.Detached;
+        }
+
+        public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null,string includeProperties = "",Expression<Func<T, object>>? orderBy = null,int pageIndex = 1,int pageSize = 10)
         {
             IQueryable<T> query = _dbSet;
 
@@ -61,6 +72,7 @@ namespace SocialMediaApp.Infrastructure.Repositories
 
             return await query.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
         }
+
 
         public async Task<T> GetByAsync(Expression<Func<T, bool>>? filter = null, bool isTracked = true, string includeProperties = "")
         {

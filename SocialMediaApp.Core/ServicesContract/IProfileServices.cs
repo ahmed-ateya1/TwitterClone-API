@@ -39,5 +39,7 @@ namespace SocialMediaApp.Core.ServicesContract
         /// <param name="IsTracked">A flag indicating whether to track the profile in the context.</param>
         /// <returns>The retrieved profile response.</returns>
         Task<ProfileResponse> GetProfileByAsync(Expression<Func<SocialMediaApp.Core.Domain.Entites.Profile, bool>> expression, bool IsTracked = false);
+
+        Task<IEnumerable<ProfileResponse>> GetAllAsync(int pageIndex = 1, int pageSize = 10);
     }
 }

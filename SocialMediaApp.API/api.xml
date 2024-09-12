@@ -70,6 +70,47 @@
             <param name="refreshToken">The refresh token to store.</param>
             <param name="expires">The expiration date and time of the refresh token.</param>
         </member>
+        <member name="T:SocialMediaApp.API.Controllers.GenreController">
+            <summary>
+            Controller for managing genres.
+            </summary>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.GenreController.#ctor(SocialMediaApp.Core.ServicesContract.IGenreServces,Microsoft.Extensions.Logging.ILogger{SocialMediaApp.API.Controllers.GenreController})">
+            <summary>
+            Initializes a new instance of the <see cref="T:SocialMediaApp.API.Controllers.GenreController"/> class.
+            </summary>
+            <param name="genreServices">The genre services.</param>
+            <param name="logger">The logger.</param>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.GenreController.GetGenres(System.Int32,System.Int32)">
+            <summary>
+            Gets the genres.
+            </summary>
+            <param name="pageIndex">The page index.</param>
+            <param name="pageSize">The page size.</param>
+            <returns>The list of genres.</returns>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.GenreController.CreateGenre(SocialMediaApp.Core.DTO.GenreDTO.GenreAddRequest)">
+            <summary>
+            Creates a new genre.
+            </summary>
+            <param name="genreAdd">The genre add request.</param>
+            <returns>The created genre.</returns>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.GenreController.UpdateGenre(SocialMediaApp.Core.DTO.GenreDTO.GenreUpdateRequest)">
+            <summary>
+            Updates an existing genre.
+            </summary>
+            <param name="genreUpdate">The genre update request.</param>
+            <returns>The updated genre.</returns>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.GenreController.DeleteGenre(System.Guid)">
+            <summary>
+            Deletes a genre by ID.
+            </summary>
+            <param name="id">The ID of the genre to delete.</param>
+            <returns>The result of the delete operation.</returns>
+        </member>
         <member name="T:SocialMediaApp.API.Controllers.ProfileController">
             <summary>
             Controller for managing user profiles.
@@ -102,6 +143,24 @@
             </summary>
             <param name="id">The ID of the profile to get.</param>
             <returns>The profile.</returns>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.ProfileController.GetProfileByUserId(System.Guid)">
+            <summary>
+            Gets a profile by user ID.
+            </summary>
+            <param name="userId">The ID of the user.</param>
+            <returns>The profile.</returns>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.ProfileController.GetProfiles(System.Int32,System.Int32)">
+            <summary>
+            Retrieves a paginated list of profiles from the system.
+            </summary>
+            <param name="pageIndex">The index of the page to retrieve. Defaults to 1.</param>
+            <param name="pageSize">The number of profiles per page. Defaults to 10.</param>
+            <returns>
+            An <see cref="T:Microsoft.AspNetCore.Mvc.ActionResult"/> containing an <see cref="T:SocialMediaApp.Core.DTO.ApiResponse"/> with the status code, success flag, 
+            result containing the list of profiles, and a message indicating the result.
+            </returns>
         </member>
     </members>
 </doc>

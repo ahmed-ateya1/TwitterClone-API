@@ -9,5 +9,6 @@ namespace SocialMediaApp.Core.RepositoriesContract
 {
     public interface IGenreRepository : IGenericRepository<Genre>
     {
+        Task<Genre> UpdateAsync(Genre genre);
     }
 }
