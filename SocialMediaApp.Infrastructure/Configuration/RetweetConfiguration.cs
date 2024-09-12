@@ -18,6 +18,20 @@ namespace SocialMediaApp.Infrastructure.Configuration
             builder.Property(x => x.RetweetID)
                 .ValueGeneratedNever();
 
+            builder.HasOne(x=>x.Profile)
+                .WithMany(x=>x.Retweets)
+                .HasForeignKey(x=>x.ProfileID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(x=>x.Comment)
+                .WithMany(x=>x.Retweets)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(x=>x.Tweet)
+                .WithMany(x => x.Retweets)
+                .HasForeignKey(x => x.TweetID)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.ToTable("Retweets");
         }
     }

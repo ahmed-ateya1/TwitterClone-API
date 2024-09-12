@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using SocialMediaApp.Core.Domain.Entites;
 using SocialMediaApp.Core.Domain.IdentityEntites;
 using SocialMediaApp.Core.DTO.ProfileDTO;
 using SocialMediaApp.Core.Helper;
@@ -106,10 +107,18 @@ namespace SocialMediaApp.Core.Services
                 try
                 {
                     var profile = await _unitOfWork.Repository<SocialMediaApp.Core.Domain.Entites.Profile>().GetByAsync(x => x.ProfileID == id, true, "User");
+
                     if (profile == null)
                     {
                         _logger.LogWarning("Profile with ID {ProfileID} not found for deletion.", id);
                         return false;
+                    }
+                    
+                    var tweets = await _unitOfWork.Repository<Tweet>().GetAllAsync(x => x.ProfileID == id);
+
+                    if(tweets != null)
+                    {
+                        await _unitOfWork.Repository<Tweet>().RemoveRangeAsync(tweets);
                     }
 
                     var user = profile.User;

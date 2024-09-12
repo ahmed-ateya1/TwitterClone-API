@@ -31,9 +31,9 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
            .HasForeignKey(x => x.TweetID)
            .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasMany(x => x.Retweets)
-            .WithOne(x => x.Comment)
-            .HasForeignKey(x => x.CommentID)
+        builder.HasOne(x => x.Profile)
+            .WithMany(x => x.Comments)
+            .HasForeignKey(x => x.ProfileID)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.ToTable("Comments");

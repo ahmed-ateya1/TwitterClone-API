@@ -22,7 +22,7 @@ namespace SocialMediaApp.Core.MappingProfile
 
             CreateMap<Domain.Entites.Profile, ProfileResponse>()
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName))
-                .ForMember(dest => dest.Age, opt => opt.MapFrom(src => DateTime.Now.Year - src.BirthDate.Year))
+                .ForMember(dest => dest.Age, opt => opt.MapFrom(src => DateTime.UtcNow.Year - src.BirthDate.Year))
                 .ReverseMap();
 
             CreateMap<ProfileUpdateRequest, Domain.Entites.Profile>()

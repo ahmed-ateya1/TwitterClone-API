@@ -36,21 +36,15 @@ namespace SocialMediaApp.Infrastructure.Configuration
             builder.Property(x => x.UpdatedAt)
                .IsRequired();
 
-            builder.HasMany(x => x.Retweets)
-            .WithOne(x => x.Tweet)
-            .HasForeignKey(x => x.TweetID)
-            .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasMany(x => x.Files)
-                .WithOne(x => x.Tweet)
-                .HasForeignKey(x => x.TweetID)
-                .OnDelete(DeleteBehavior.Cascade);
-
             builder.HasOne(x => x.Genre)
                 .WithMany(x => x.Tweets)
                 .HasForeignKey(x => x.GenreID)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.HasOne(x => x.Profile)
+                .WithMany(x => x.Tweets)
+                .HasForeignKey(x => x.ProfileID)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.ToTable("Tweets");
         }

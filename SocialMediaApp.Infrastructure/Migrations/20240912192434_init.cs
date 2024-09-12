@@ -309,7 +309,7 @@ namespace SocialMediaApp.Infrastructure.Migrations
                         column: x => x.ProfileID,
                         principalTable: "Profiles",
                         principalColumn: "ProfileID",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -353,13 +353,13 @@ namespace SocialMediaApp.Infrastructure.Migrations
                 name: "TweetFiles",
                 columns: table => new
                 {
-                    TweetID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TweetFilesID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FileURL = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    FileURL = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TweetID = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TweetFiles", x => x.TweetID);
+                    table.PrimaryKey("PK_TweetFiles", x => x.TweetFilesID);
                     table.ForeignKey(
                         name: "FK_TweetFiles_Tweets_TweetID",
                         column: x => x.TweetID,
@@ -432,7 +432,7 @@ namespace SocialMediaApp.Infrastructure.Migrations
                         column: x => x.TweetID,
                         principalTable: "Tweets",
                         principalColumn: "TweetID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -533,6 +533,11 @@ namespace SocialMediaApp.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Retweets_TweetID",
                 table: "Retweets",
+                column: "TweetID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TweetFiles_TweetID",
+                table: "TweetFiles",
                 column: "TweetID");
 
             migrationBuilder.CreateIndex(

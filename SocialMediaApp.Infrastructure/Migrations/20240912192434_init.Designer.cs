@@ -12,7 +12,7 @@ using SocialMediaApp.Infrastructure.Data;
 namespace SocialMediaApp.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240910152536_init")]
+    [Migration("20240912192434_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -384,17 +384,19 @@ namespace SocialMediaApp.Infrastructure.Migrations
 
             modelBuilder.Entity("SocialMediaApp.Core.Domain.Entites.TweetFiles", b =>
                 {
-                    b.Property<Guid>("TweetID")
+                    b.Property<Guid>("TweetFilesID")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("FileURL")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("TweetFilesID")
+                    b.Property<Guid>("TweetID")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("TweetID");
+                    b.HasKey("TweetFilesID");
+
+                    b.HasIndex("TweetID");
 
                     b.ToTable("TweetFiles", (string)null);
                 });
@@ -673,7 +675,7 @@ namespace SocialMediaApp.Infrastructure.Migrations
                     b.HasOne("SocialMediaApp.Core.Domain.Entites.Tweet", "Tweet")
                         .WithMany("Retweets")
                         .HasForeignKey("TweetID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Comment");
@@ -694,7 +696,7 @@ namespace SocialMediaApp.Infrastructure.Migrations
                     b.HasOne("SocialMediaApp.Core.Domain.Entites.Profile", "Profile")
                         .WithMany("Tweets")
                         .HasForeignKey("ProfileID")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Genre");

@@ -672,7 +672,7 @@ namespace SocialMediaApp.Infrastructure.Migrations
                     b.HasOne("SocialMediaApp.Core.Domain.Entites.Tweet", "Tweet")
                         .WithMany("Retweets")
                         .HasForeignKey("TweetID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Comment");

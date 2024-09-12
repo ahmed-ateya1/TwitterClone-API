@@ -162,5 +162,38 @@
             result containing the list of profiles, and a message indicating the result.
             </returns>
         </member>
+        <member name="T:SocialMediaApp.API.FileServices.FileService">
+            <summary>
+            Provides file-related services for the application.
+            </summary>
+        </member>
+        <member name="M:SocialMediaApp.API.FileServices.FileService.#ctor(Microsoft.AspNetCore.Hosting.IWebHostEnvironment,Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+            <summary>
+            Initializes a new instance of the <see cref="T:SocialMediaApp.API.FileServices.FileService"/> class.
+            </summary>
+            <param name="environment">The web host environment.</param>
+            <param name="httpContextAccessor">The HTTP context accessor.</param>
+        </member>
+        <member name="M:SocialMediaApp.API.FileServices.FileService.CreateFile(Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            Creates a new file in the "Upload" directory.
+            </summary>
+            <param name="file">The file to be created.</param>
+            <returns>The URL of the created file.</returns>
+        </member>
+        <member name="M:SocialMediaApp.API.FileServices.FileService.DeleteFile(System.String)">
+            <summary>
+            Deletes a file from the "Upload" directory.
+            </summary>
+            <param name="imageUrl">The URL of the file to be deleted.</param>
+        </member>
+        <member name="M:SocialMediaApp.API.FileServices.FileService.UpdateFile(Microsoft.AspNetCore.Http.IFormFile,System.String)">
+            <summary>
+            Updates a file in the "Upload" directory.
+            </summary>
+            <param name="newFile">The new file to be updated.</param>
+            <param name="currentFileName">The URL of the current file to be replaced.</param>
+            <returns>The URL of the updated file.</returns>
+        </member>
     </members>
 </doc>

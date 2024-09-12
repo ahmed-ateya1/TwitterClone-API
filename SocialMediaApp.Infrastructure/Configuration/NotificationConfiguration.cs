@@ -26,6 +26,11 @@ namespace SocialMediaApp.Infrastructure.Configuration
             builder.Property(x => x.CreatedAt)
                 .IsRequired();
 
+            builder.HasOne(x=>x.Profile)
+                .WithMany(x=>x.Notifications)
+                .HasForeignKey(x=>x.ProfileID)
+                .OnDelete(DeleteBehavior.Cascade);
+
             builder.ToTable("Notifications");
         }
     }

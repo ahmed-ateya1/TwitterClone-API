@@ -95,6 +95,13 @@ namespace SocialMediaApp.Infrastructure.Repositories
             return await query.FirstOrDefaultAsync(filter);
         }
 
+        public Task RemoveRangeAsync(IEnumerable<T> model)
+        {
+            _dbSet.RemoveRange(model);
+
+            return SaveAsync();
+        }
+
         public async Task SaveAsync()
         {
             await _db.SaveChangesAsync();

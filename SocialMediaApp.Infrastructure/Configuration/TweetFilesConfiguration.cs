@@ -15,6 +15,12 @@ namespace SocialMediaApp.Infrastructure.Configuration
         {
             builder.HasKey(x=>x.TweetFilesID);
             builder.Property(x => x.TweetFilesID).ValueGeneratedNever();
+
+            builder.HasOne(x=>x.Tweet)
+                .WithMany(x=>x.Files)
+                .HasForeignKey(x=>x.TweetID)
+                .OnDelete(DeleteBehavior.Cascade);
+
             builder.ToTable("TweetFiles");
         }
     }
