@@ -62,7 +62,7 @@ namespace SocialMediaApp.Core.Services
                     if (user == null)
                         throw new InvalidOperationException("User not found");
 
-                    var profile = _mapper.Map<SocialMediaApp.Core.Domain.Entites.Profile>(profileAddRequest);
+                    var profile = _mapper.Map<Domain.Entites.Profile>(profileAddRequest);
                     profile.UserID = user.Id;
                     profile.User = user;
                     profile.ProfileID = Guid.NewGuid();
@@ -78,7 +78,7 @@ namespace SocialMediaApp.Core.Services
                         throw new InvalidOperationException("File upload failed", ex);
                     }
 
-                    await _unitOfWork.Repository<SocialMediaApp.Core.Domain.Entites.Profile>().CreateAsync(profile);
+                    await _unitOfWork.Repository<Domain.Entites.Profile>().CreateAsync(profile);
 
                     user.ProfileID = profile.ProfileID;
                     await _userManager.UpdateAsync(user);
@@ -106,7 +106,7 @@ namespace SocialMediaApp.Core.Services
             {
                 try
                 {
-                    var profile = await _unitOfWork.Repository<SocialMediaApp.Core.Domain.Entites.Profile>().GetByAsync(x => x.ProfileID == id, true, "User");
+                    var profile = await _unitOfWork.Repository<Domain.Entites.Profile>().GetByAsync(x => x.ProfileID == id, true, "User");
 
                     if (profile == null)
                     {
@@ -135,7 +135,7 @@ namespace SocialMediaApp.Core.Services
                         _logger.LogError(ex, "Error deleting files for profile ID {ProfileID}", id);
                     }
 
-                    var profileDeleted = await _unitOfWork.Repository<SocialMediaApp.Core.Domain.Entites.Profile>().DeleteAsync(profile);
+                    var profileDeleted = await _unitOfWork.Repository<Domain.Entites.Profile>().DeleteAsync(profile);
                     if (!profileDeleted)
                     {
                         _logger.LogError("Failed to delete profile with ID {ProfileID}.", id);
@@ -167,14 +167,14 @@ namespace SocialMediaApp.Core.Services
 
         public async Task<IEnumerable<ProfileResponse>> GetAllAsync(int pageIndex = 1, int pageSize = 10)
         {
-            var profiles = await _unitOfWork.Repository<SocialMediaApp.Core.Domain.Entites.Profile>().GetAllAsync(null, "", null, pageIndex, pageSize);
+            var profiles = await _unitOfWork.Repository<Domain.Entites.Profile>().GetAllAsync(null, "", null, pageIndex, pageSize);
             return _mapper.Map<IEnumerable<ProfileResponse>>(profiles);
         }
 
 
-        public async Task<ProfileResponse> GetProfileByAsync(Expression<Func<SocialMediaApp.Core.Domain.Entites.Profile, bool>> expression, bool IsTracked = true)
+        public async Task<ProfileResponse> GetProfileByAsync(Expression<Func<Domain.Entites.Profile, bool>> expression, bool IsTracked = true)
         {
-            var profile = await _unitOfWork.Repository<SocialMediaApp.Core.Domain.Entites.Profile>().GetByAsync(expression, IsTracked, "User");
+            var profile = await _unitOfWork.Repository<Domain.Entites.Profile>().GetByAsync(expression, IsTracked, "User");
 
             if (profile == null)
             {
@@ -196,7 +196,7 @@ namespace SocialMediaApp.Core.Services
 
             try
             {
-                var profile = await _unitOfWork.Repository<SocialMediaApp.Core.Domain.Entites.Profile>().GetByAsync(x => x.ProfileID == profileUpdateRequest.ProfileID)
+                var profile = await _unitOfWork.Repository<Domain.Entites.Profile>().GetByAsync(x => x.ProfileID == profileUpdateRequest.ProfileID)
                   ?? throw new InvalidOperationException("Profile not found");
 
                 var userName = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)

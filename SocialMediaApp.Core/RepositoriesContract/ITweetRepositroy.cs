@@ -1,4 +1,5 @@
 ﻿using SocialMediaApp.Core.Domain.Entites;
+using SocialMediaApp.Core.DTO.TweetDTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,5 +10,6 @@ namespace SocialMediaApp.Core.RepositoriesContract
 {
     public interface ITweetRepositroy : IGenericRepository <Tweet>
     {
+        Task<Tweet> UpdateAsync(Tweet tweet);
     }
 }

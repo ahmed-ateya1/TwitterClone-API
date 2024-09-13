@@ -1,8 +1,10 @@
-﻿using SocialMediaApp.Core.Domain.Entites;
+﻿using Microsoft.AspNetCore.Http;
+using SocialMediaApp.Core.Domain.Entites;
 using SocialMediaApp.Core.DTO.FilesTweetDTO;
 using SocialMediaApp.Core.Helper;
 using SocialMediaApp.Core.IUnitOfWorkConfig;
 using SocialMediaApp.Core.ServicesContract;
+using System.IO;
 
 public class TweetFilesServices : ITweetFilesServices
 {
@@ -13,6 +15,14 @@ public class TweetFilesServices : ITweetFilesServices
     {
         _fileServices = fileServices;
         _unitOfWork = unitOfWork;
+    }
+
+    public async Task<bool> DeleteTweetFileAsync(IEnumerable<TweetFiles> files)
+    {
+        var fileDeletionTasks = files.Select(x => _fileServices.DeleteFile(Path.GetFileName(x.FileURL)));
+        await Task.WhenAll(fileDeletionTasks);
+        await _unitOfWork.Repository<TweetFiles>().RemoveRangeAsync(files);
+        return true;
     }
 
     public async Task<IEnumerable<TweetFiles>> SaveTweetFileAsync(FileTweetAddRequest? fileTweetAdd)
@@ -44,7 +54,7 @@ public class TweetFilesServices : ITweetFilesServices
             var tweetFile = new TweetFiles
             {
                 TweetFilesID = Guid.NewGuid(),
-                FileURL = await _fileServices.CreateFile(file),  // This should return the relative path like "Upload/filename.jpg"
+                FileURL = await _fileServices.CreateFile(file), 
                 TweetID = tweetID
             };
 

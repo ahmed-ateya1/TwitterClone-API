@@ -11,13 +11,7 @@ namespace SocialMediaApp.Core.DTO.TweetDTO
         public long TotalComments { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public bool IsUpdated
-        {
-            get
-            {
-                return UpdatedAt.Date > CreatedAt.Date;
-            }
-        }
+        public bool IsUpdated { get; set; }
         public Guid ProfileID { get; set; }
         public Guid GenreID { get; set; }
         public string UserName { get; set; }

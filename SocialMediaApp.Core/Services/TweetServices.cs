@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using MailKit.Search;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
@@ -100,19 +101,100 @@ namespace SocialMediaApp.Core.Services
         }
 
 
-        public Task<TweetResponse> DeleteAsync(Guid? tweetID)
+        public async Task<bool> DeleteAsync(Guid? tweetID)
         {
-            throw new NotImplementedException();
+            var tweet = await _unitOfWork.Repository<Tweet>().GetByAsync(x => x.TweetID == tweetID);
+
+            if (tweet == null)
+                throw new InvalidOperationException("Tweet not found");
+
+            using (var transaction = await _unitOfWork.BeginTransactionAsync())
+            {
+                try
+                {
+                    var result = await _unitOfWork.Repository<Tweet>().DeleteAsync(tweet);
+                    if (result)
+                    {
+                        await _unitOfWork.CommitTransactionAsync();
+                        return true;
+                    }
+                    return false;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, ex.Message);
+                    await _unitOfWork.RollbackTransactionAsync();
+                    throw;
+                }
+            }
         }
 
-        public Task<TweetResponse> GetAllAsync(Expression<Func<Tweet, bool>>? filter = null, string includeProperties = "", Expression<Func<Tweet, object>>? orderBy = null, int pageIndex = 1, int pageSize = 10)
+        public async Task<IEnumerable<TweetResponse>> GetAllAsync(Expression<Func<Tweet, bool>>? filter = null, Expression<Func<Tweet, object>>? orderBy = null, int pageIndex = 1, int pageSize = 10)
         {
-            throw new NotImplementedException();
+            string includeProperties = "Profile,Profile.User,Genre,Files";
+
+            var tweets = await _unitOfWork.Repository<Tweet>().GetAllAsync(filter, includeProperties, orderBy, pageIndex, pageSize);
+            return _mapper.Map<IEnumerable<TweetResponse>>(tweets);
         }
 
-        public Task<TweetResponse> GetByAsync(Expression<Func<Tweet, bool>>? filter = null, bool isTracked = true, string includeProperties = "")
+        public async Task<TweetResponse> GetByAsync(Expression<Func<Tweet, bool>>? filter = null, bool isTracked = true)
         {
-            throw new NotImplementedException();
+            string includeProperties = "Profile,Profile.User,Genre,Files";
+            var tweet = await _unitOfWork.Repository<Tweet>().GetByAsync(filter, isTracked, includeProperties);
+            return _mapper.Map<TweetResponse>(tweet);
+        }
+
+        public async Task<TweetResponse> UpdateAsync(TweetUpdateRequest? tweetUpdateRequest)
+        {
+            if (tweetUpdateRequest == null)
+            {
+                throw new ArgumentNullException(nameof(tweetUpdateRequest));
+            }
+            ValidationHelper.ValidateModel(tweetUpdateRequest);
+
+            var userName = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userName))
+                throw new UnauthorizedAccessException("User is not authenticated");
+
+            using(var transaction = await _unitOfWork.BeginTransactionAsync())
+            {
+                try
+                {
+                    var tweet = await _unitOfWork.Repository<Tweet>().GetByAsync(x=>x.TweetID == tweetUpdateRequest.TweetID , isTracked: true , "Profile,Profile.User,Genre,Files");
+                    if (tweet == null)
+                        throw new InvalidOperationException("Tweet not found");
+                    
+                    if (tweetUpdateRequest.TweetFiles != null && tweetUpdateRequest.TweetFiles.Any())
+                    {
+                        if (tweet.Files != null && tweet.Files.Any())
+                        {
+                            await _tweetFilesServices.DeleteTweetFileAsync(tweet.Files);
+                        }
+
+                        var fileTweetAdd = new FileTweetAddRequest()
+                        {
+                            formFiles = tweetUpdateRequest.TweetFiles,
+                            TweetID = tweet.TweetID
+                        };
+                        var newfiles = await _tweetFilesServices.SaveTweetFileAsync(fileTweetAdd);
+                        tweet.Files = newfiles.ToList();
+                    }
+                    _mapper.Map(tweetUpdateRequest, tweet);
+
+                    await _tweetRepositroy.UpdateAsync(tweet);
+                    await _unitOfWork.CommitTransactionAsync();
+
+                    return _mapper.Map<TweetResponse>(tweet);
+                }
+                catch(Exception ex)
+                {
+                    _logger.LogError(ex, ex.Message);
+                    await _unitOfWork.RollbackTransactionAsync();
+                    throw;
+                }
+            }
+
         }
     }
 }

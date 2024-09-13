@@ -28,21 +28,28 @@ namespace SocialMediaApp.API.FileServices
         /// <returns>The URL of the created file.</returns>
         public async Task<string> CreateFile(IFormFile file)
         {
-            string newFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-            string newPath = Path.Combine(_environment.WebRootPath, "Upload", newFileName);
-
-            if (!Directory.Exists(Path.Combine(_environment.WebRootPath, "Upload")))
+            try
             {
-                Directory.CreateDirectory(Path.Combine(_environment.WebRootPath, "Upload"));
-            }
+                string newFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                string newPath = Path.Combine(_environment.WebRootPath, "Upload", newFileName);
 
-            using (var stream = new FileStream(newPath, FileMode.Create))
+                if (!Directory.Exists(Path.Combine(_environment.WebRootPath, "Upload")))
+                {
+                    Directory.CreateDirectory(Path.Combine(_environment.WebRootPath, "Upload"));
+                }
+
+                using (var stream = new FileStream(newPath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream).ConfigureAwait(false);
+                }
+
+                var baseUrl = GetBaseUrl() + "Upload/" + newFileName;
+                return baseUrl;
+            }
+            catch (Exception ex)
             {
-                await file.CopyToAsync(stream).ConfigureAwait(false);
+                throw new InvalidOperationException("Error creating file", ex);
             }
-            var baseUrl = GetBaseUrl() + "Upload/" + newFileName;
-
-            return baseUrl;
         }
 
         /// <summary>
@@ -56,11 +63,18 @@ namespace SocialMediaApp.API.FileServices
                 return;
             }
 
-            string imagePath = Path.Combine(_environment.WebRootPath, "Upload", imageUrl);
-
-            if (System.IO.File.Exists(imagePath))
+            try
             {
-                await Task.Run(() => System.IO.File.Delete(imagePath)).ConfigureAwait(false);
+                string imagePath = Path.Combine(_environment.WebRootPath, "Upload", imageUrl);
+
+                if (System.IO.File.Exists(imagePath))
+                {
+                    await Task.Run(() => System.IO.File.Delete(imagePath)).ConfigureAwait(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Error deleting file", ex);
             }
         }
 
