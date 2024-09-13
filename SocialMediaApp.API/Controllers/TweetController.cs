@@ -15,12 +15,22 @@ public class TweetController : ControllerBase
     private readonly ITweetServices _tweetServices;
     private readonly ILogger<TweetController> _logger;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TweetController"/> class.
+    /// </summary>
+    /// <param name="tweetServices">The tweet services.</param>
+    /// <param name="logger">The logger.</param>
     public TweetController(ITweetServices tweetServices, ILogger<TweetController> logger)
     {
         _tweetServices = tweetServices;
         _logger = logger;
     }
 
+    /// <summary>
+    /// Creates a new tweet.
+    /// </summary>
+    /// <param name="tweetAddRequest">The tweet add request.</param>
+    /// <returns>The created tweet.</returns>
     [HttpPost("createTweet")]
     public async Task<ActionResult<ApiResponse>> CreateTweet([FromForm] TweetAddRequest tweetAddRequest)
     {
@@ -71,6 +81,11 @@ public class TweetController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Updates an existing tweet.
+    /// </summary>
+    /// <param name="tweetUpdateRequest">The tweet update request.</param>
+    /// <returns>The updated tweet.</returns>
     [HttpPut("updateTweet")]
     public async Task<ActionResult<ApiResponse>> UpdateTweet([FromForm] TweetUpdateRequest tweetUpdateRequest)
     {
@@ -116,7 +131,7 @@ public class TweetController : ControllerBase
                 Result = updateTweet
             });
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             return StatusCode(500, new ApiResponse
             {
@@ -127,7 +142,12 @@ public class TweetController : ControllerBase
         }
     }
 
-        [HttpDelete("deleteTweet/{tweetID}")]
+    /// <summary>
+    /// Deletes a tweet.
+    /// </summary>
+    /// <param name="tweetID">The ID of the tweet to delete.</param>
+    /// <returns>The result of the tweet deletion.</returns>
+    [HttpDelete("deleteTweet/{tweetID}")]
     public async Task<ActionResult<ApiResponse>> DeleteTweet(Guid tweetID)
     {
         if (tweetID == Guid.Empty)
@@ -140,7 +160,7 @@ public class TweetController : ControllerBase
                 StatusCode = HttpStatusCode.BadRequest
             });
         }
-       
+
         try
         {
             var tweet = await _tweetServices.GetByAsync(x => x.TweetID == tweetID);
@@ -188,11 +208,17 @@ public class TweetController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Gets a list of tweets.
+    /// </summary>
+    /// <param name="pageIndex">The page index.</param>
+    /// <param name="pageSize">The page size.</param>
+    /// <returns>The list of tweets.</returns>
     [HttpGet("getTweets")]
     [AllowAnonymous]
-    public async Task<ActionResult<ApiResponse>> GetTweets(int pageIndex = 1 , int pageSize =10 )
+    public async Task<ActionResult<ApiResponse>> GetTweets(int pageIndex = 1, int pageSize = 10)
     {
-        var tweets = await _tweetServices.GetAllAsync(null, x=>x.CreatedAt, pageIndex, pageSize);
+        var tweets = await _tweetServices.GetAllAsync(null, x => x.CreatedAt, pageIndex, pageSize);
         return Ok(new ApiResponse
         {
             StatusCode = HttpStatusCode.OK,
@@ -202,6 +228,11 @@ public class TweetController : ControllerBase
         });
     }
 
+    /// <summary>
+    /// Gets a tweet by ID.
+    /// </summary>
+    /// <param name="tweetID">The ID of the tweet.</param>
+    /// <returns>The tweet.</returns>
     [HttpGet("getTweet/{tweetID}")]
     [AllowAnonymous]
     public async Task<ActionResult<ApiResponse>> GetTweet(Guid tweetID)
@@ -225,9 +256,17 @@ public class TweetController : ControllerBase
             Messages = "Tweet found"
         });
     }
+
+    /// <summary>
+    /// Gets tweets for a specific profile.
+    /// </summary>
+    /// <param name="profileID">The ID of the profile.</param>
+    /// <param name="pageIndex">The page index.</param>
+    /// <param name="pageSize">The page size.</param>
+    /// <returns>The list of tweets for the specific profile.</returns>
     [HttpGet("getTweetstoSpecificProfile/{profileID}")]
     [AllowAnonymous]
-    public async Task<ActionResult<ApiResponse>> GetTweetstoSpecificProfile(Guid profileID , int pageIndex = 1, int pageSize = 10)
+    public async Task<ActionResult<ApiResponse>> GetTweetstoSpecificProfile(Guid profileID, int pageIndex = 1, int pageSize = 10)
     {
         var tweets = await _tweetServices.GetAllAsync(x => x.ProfileID == profileID, x => x.CreatedAt, pageIndex, pageSize);
         return Ok(new ApiResponse
