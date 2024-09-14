@@ -89,6 +89,7 @@ namespace SocialMediaApp.API.StartupExtensions
             services.AddScoped<ITweetFilesServices, TweetFilesServices>();
             services.AddScoped<ITweetServices , TweetServices>();
             services.AddScoped<ITweetRepositroy , TweetRepository>();
+            services.AddScoped<IUserConnectionsServices,UserConnectionsServices>();
             services.AddAutoMapper(typeof(ProfileConfig));
             services.AddControllers();
             services.AddEndpointsApiExplorer();
