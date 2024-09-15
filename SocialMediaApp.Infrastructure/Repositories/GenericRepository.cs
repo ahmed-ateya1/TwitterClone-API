@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SocialMediaApp.Core.Enumeration;
 using SocialMediaApp.Core.RepositoriesContract;
 using SocialMediaApp.Infrastructure.Data;
 using System;
@@ -68,8 +69,9 @@ namespace SocialMediaApp.Infrastructure.Repositories
             }
 
             if (orderBy != null)
-                query = query.OrderBy(orderBy);
-
+            {
+                 query = query.OrderBy(orderBy);
+            }
             return await query.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
         }
 

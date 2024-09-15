@@ -9,5 +9,6 @@ namespace SocialMediaApp.Core.RepositoriesContract
 {
     public interface ICommentRepository : IGenericRepository<Comment>
     {
+        Task<Comment> UpdateAsync(Comment comment);
     }
 }

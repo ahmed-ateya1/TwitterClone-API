@@ -70,6 +70,61 @@
             <param name="refreshToken">The refresh token to store.</param>
             <param name="expires">The expiration date and time of the refresh token.</param>
         </member>
+        <member name="T:SocialMediaApp.API.Controllers.CommentController">
+            <summary>
+            Controller for managing comments on tweets.
+            </summary>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.CommentController.#ctor(SocialMediaApp.Core.ServicesContract.ICommentServices,Microsoft.Extensions.Logging.ILogger{SocialMediaApp.API.Controllers.CommentController})">
+            <summary>
+            Initializes a new instance of the <see cref="T:SocialMediaApp.API.Controllers.CommentController"/> class.
+            </summary>
+            <param name="commentServices">The comment services.</param>
+            <param name="logger">The logger instance for logging.</param>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.CommentController.CreateComment(SocialMediaApp.Core.DTO.CommentDTO.CommentAddRequest)">
+            <summary>
+            Creates a new comment.
+            </summary>
+            <param name="commentAdd">The comment details to be added.</param>
+            <returns>An API response indicating success or failure.</returns>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.CommentController.GetComments(System.Int32,System.Int32)">
+            <summary>
+            Retrieves comments with pagination.
+            </summary>
+            <param name="pageIndex">The index of the page to retrieve (default is 1).</param>
+            <param name="pageSize">The number of comments per page (default is 5).</param>
+            <returns>An API response containing the list of comments.</returns>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.CommentController.GetCommentsForTweet(System.Guid)">
+            <summary>
+            Retrieves comments for a specific tweet.
+            </summary>
+            <param name="tweetID">The ID of the tweet.</param>
+            <returns>An API response containing the list of comments for the tweet.</returns>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.CommentController.GetRepliesForComment(System.Guid)">
+            <summary>
+            Retrieves replies for a specific comment.
+            </summary>
+            <param name="commentId">The ID of the comment.</param>
+            <returns>An API response containing the list of replies for the comment.</returns>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.CommentController.UpdateComment(SocialMediaApp.Core.DTO.CommentDTO.CommentUpdateRequest)">
+            <summary>
+            Updates an existing comment.
+            </summary>
+            <param name="commentUpdate">The updated comment details.</param>
+            <returns>An API response indicating the success of the update operation.</returns>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.CommentController.DeleteComment(System.Guid)">
+            <summary>
+            Deletes a comment by its ID.
+            </summary>
+            <param name="commentID">The ID of the comment to delete.</param>
+            <returns>An API response indicating the success or failure of the delete operation.</returns>
+        </member>
         <member name="T:SocialMediaApp.API.Controllers.GenreController">
             <summary>
             Controller for managing genres.
@@ -89,6 +144,13 @@
             <param name="pageIndex">The page index.</param>
             <param name="pageSize">The page size.</param>
             <returns>The list of genres.</returns>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.GenreController.GetGenre(System.Guid)">
+            <summary>
+            Gets a genre by ID.
+            </summary>
+            <param name="id">The ID of the genre.</param>
+            <returns>The genre.</returns>
         </member>
         <member name="M:SocialMediaApp.API.Controllers.GenreController.CreateGenre(SocialMediaApp.Core.DTO.GenreDTO.GenreAddRequest)">
             <summary>
@@ -194,6 +256,58 @@
             <param name="newFile">The new file to be updated.</param>
             <param name="currentFileName">The URL of the current file to be replaced.</param>
             <returns>The URL of the updated file.</returns>
+        </member>
+        <member name="M:TweetController.#ctor(SocialMediaApp.Core.ServicesContract.ITweetServices,Microsoft.Extensions.Logging.ILogger{TweetController})">
+            <summary>
+            Initializes a new instance of the <see cref="T:TweetController"/> class.
+            </summary>
+            <param name="tweetServices">The tweet services.</param>
+            <param name="logger">The logger.</param>
+        </member>
+        <member name="M:TweetController.CreateTweet(SocialMediaApp.Core.DTO.TweetDTO.TweetAddRequest)">
+            <summary>
+            Creates a new tweet.
+            </summary>
+            <param name="tweetAddRequest">The tweet add request.</param>
+            <returns>The created tweet.</returns>
+        </member>
+        <member name="M:TweetController.UpdateTweet(SocialMediaApp.Core.DTO.TweetDTO.TweetUpdateRequest)">
+            <summary>
+            Updates an existing tweet.
+            </summary>
+            <param name="tweetUpdateRequest">The tweet update request.</param>
+            <returns>The updated tweet.</returns>
+        </member>
+        <member name="M:TweetController.DeleteTweet(System.Guid)">
+            <summary>
+            Deletes a tweet.
+            </summary>
+            <param name="tweetID">The ID of the tweet to delete.</param>
+            <returns>The result of the tweet deletion.</returns>
+        </member>
+        <member name="M:TweetController.GetTweets(System.Int32,System.Int32)">
+            <summary>
+            Gets a list of tweets.
+            </summary>
+            <param name="pageIndex">The page index.</param>
+            <param name="pageSize">The page size.</param>
+            <returns>The list of tweets.</returns>
+        </member>
+        <member name="M:TweetController.GetTweet(System.Guid)">
+            <summary>
+            Gets a tweet by ID.
+            </summary>
+            <param name="tweetID">The ID of the tweet.</param>
+            <returns>The tweet.</returns>
+        </member>
+        <member name="M:TweetController.GetTweetsForSpecificProfile(System.Guid,System.Int32,System.Int32)">
+            <summary>
+            Gets tweets for a specific profile.
+            </summary>
+            <param name="profileID">The ID of the profile.</param>
+            <param name="pageIndex">The page index.</param>
+            <param name="pageSize">The page size.</param>
+            <returns>The list of tweets for the specific profile.</returns>
         </member>
     </members>
 </doc>
