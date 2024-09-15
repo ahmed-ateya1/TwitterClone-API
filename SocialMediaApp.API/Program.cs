@@ -1,5 +1,6 @@
 
 using SocialMediaApp.API.StartupExtensions;
+using SocialMediaApp.Core.Hubs;
 
 namespace SocialMediaApp.API
 {
@@ -28,7 +29,7 @@ namespace SocialMediaApp.API
 
 
             app.MapControllers();
-
+            app.MapHub<TotalFollowingUnfollowingHub>("/TotalFollowingUnfollowingHub");
             app.Run();
         }
     }

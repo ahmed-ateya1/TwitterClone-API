@@ -162,6 +162,27 @@
             result containing the list of profiles, and a message indicating the result.
             </returns>
         </member>
+        <member name="M:SocialMediaApp.API.Controllers.UserConnectionsController.#ctor(Microsoft.Extensions.Logging.ILogger{SocialMediaApp.API.Controllers.UserConnectionsController},SocialMediaApp.Core.ServicesContract.IUserConnectionsServices)">
+            <summary>
+            Initializes a new instance of the <see cref="T:SocialMediaApp.API.Controllers.UserConnectionsController"/> class.
+            </summary>
+            <param name="logger">The logger.</param>
+            <param name="userConnectionsServices">The tweet services.</param>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.UserConnectionsController.Follow(System.Guid)">
+            <summary>
+             Make follow to a specific profile.
+            </summary>
+            <param name="followedId">The Id of profile you want to follow.</param>
+            <returns>The Follower profile Id Followed profile Id and creation time.</returns>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.UserConnectionsController.Unfollow(System.Guid)">
+            <summary>
+             Make Unfollow to a specific profile.
+            </summary>
+            <param name="UnfollowedId">The Id of profile you want to Unfollow.</param>
+            <returns></returns>
+        </member>
         <member name="T:SocialMediaApp.API.FileServices.FileService">
             <summary>
             Provides file-related services for the application.
