@@ -1,4 +1,3 @@
-
 using SocialMediaApp.API.StartupExtensions;
 using SocialMediaApp.Core.Hubs;
 
@@ -14,22 +13,26 @@ namespace SocialMediaApp.API
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
             app.UseCors();
             app.UseStaticFiles();
             app.UseHttpsRedirection();
 
+            app.UseRouting();
+
             app.UseAuthentication();
             app.UseAuthorization();
-
-
-            app.MapControllers();
-            app.MapHub<TotalFollowingUnfollowingHub>("/TotalFollowingUnfollowingHub");
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapHub<CommentHub>("/commentHub"); 
+                endpoints.MapHub<TotalFollowingUnfollowingHub>("/TotalFollowingUnfollowingHub");
+            });
             app.Run();
         }
     }

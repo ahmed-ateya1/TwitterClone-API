@@ -9,6 +9,7 @@ namespace SocialMediaApp.Core.Domain.Entites
     public class Comment
     {
         public Guid CommentID { get; set; }
+        public string Content { get; set; }
         public long TotalLikes { get; set; }
         public long TotalRetweet { get; set; }
         public long TotalComment { get; set; }
@@ -25,7 +26,7 @@ namespace SocialMediaApp.Core.Domain.Entites
         public Guid? ParentCommentID { get; set; }
         public Comment ParentComment { get; set; }
         public ICollection<Comment> Replies { get; set; } = new List<Comment>();
-
+        public ICollection<CommentFiles> Files { get; set; } = new List<CommentFiles>();
         public ICollection<Like> Likes { get; set; } = new List<Like>();
         public ICollection<Retweet> Retweets { get; set; } = new List<Retweet>();
     }

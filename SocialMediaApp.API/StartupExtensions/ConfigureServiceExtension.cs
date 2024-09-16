@@ -25,6 +25,7 @@ namespace SocialMediaApp.API.StartupExtensions
     {
         public static IServiceCollection ServiceConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddSignalR();
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseSqlServer(configuration.GetConnectionString("connstr"));
@@ -90,8 +91,10 @@ namespace SocialMediaApp.API.StartupExtensions
             services.AddScoped<ITweetServices , TweetServices>();
             services.AddScoped<ITweetRepositroy , TweetRepository>();
             services.AddScoped<IUserConnectionsServices,UserConnectionsServices>();
+            services.AddScoped<ICommentServices, CommentServices>();
+            services.AddScoped<ICommentRepository , CommentRepository>();
+            services.AddScoped<ICommentFilesServices, CommentFilesServices>();
             services.AddAutoMapper(typeof(ProfileConfig));
-            services.AddSignalR();
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(c =>

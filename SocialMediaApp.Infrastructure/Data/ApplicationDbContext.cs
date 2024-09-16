@@ -21,6 +21,7 @@ namespace SocialMediaApp.Infrastructure.Data
         public DbSet<Retweet> Retweets { get; set; }
         public DbSet<Tweet> Tweets { get; set; }
         public DbSet<TweetFiles> TweetsFiles { get; set; }
+        public DbSet<CommentFiles> CommentFiles { get; set; }
         public DbSet<UserConnections> UserConnections { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 

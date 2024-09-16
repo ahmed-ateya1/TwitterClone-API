@@ -145,6 +145,10 @@ namespace SocialMediaApp.Infrastructure.Migrations
                     b.Property<Guid>("CommentID")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -181,6 +185,26 @@ namespace SocialMediaApp.Infrastructure.Migrations
                     b.HasIndex("TweetID");
 
                     b.ToTable("Comments", (string)null);
+                });
+
+            modelBuilder.Entity("SocialMediaApp.Core.Domain.Entites.CommentFiles", b =>
+                {
+                    b.Property<Guid>("CommentFileID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CommentID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("FileUrl")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("CommentFileID");
+
+                    b.HasIndex("CommentID");
+
+                    b.ToTable("CommentFiles");
                 });
 
             modelBuilder.Entity("SocialMediaApp.Core.Domain.Entites.Genre", b =>
@@ -606,6 +630,17 @@ namespace SocialMediaApp.Infrastructure.Migrations
                     b.Navigation("Tweet");
                 });
 
+            modelBuilder.Entity("SocialMediaApp.Core.Domain.Entites.CommentFiles", b =>
+                {
+                    b.HasOne("SocialMediaApp.Core.Domain.Entites.Comment", "Comment")
+                        .WithMany("FormFiles")
+                        .HasForeignKey("CommentID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Comment");
+                });
+
             modelBuilder.Entity("SocialMediaApp.Core.Domain.Entites.Like", b =>
                 {
                     b.HasOne("SocialMediaApp.Core.Domain.Entites.Comment", "Comment")
@@ -704,7 +739,7 @@ namespace SocialMediaApp.Infrastructure.Migrations
             modelBuilder.Entity("SocialMediaApp.Core.Domain.Entites.TweetFiles", b =>
                 {
                     b.HasOne("SocialMediaApp.Core.Domain.Entites.Tweet", "Tweet")
-                        .WithMany("Files")
+                        .WithMany("FormFiles")
                         .HasForeignKey("TweetID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -751,6 +786,8 @@ namespace SocialMediaApp.Infrastructure.Migrations
 
             modelBuilder.Entity("SocialMediaApp.Core.Domain.Entites.Comment", b =>
                 {
+                    b.Navigation("FormFiles");
+
                     b.Navigation("Likes");
 
                     b.Navigation("Replies");
@@ -782,7 +819,7 @@ namespace SocialMediaApp.Infrastructure.Migrations
                 {
                     b.Navigation("Comments");
 
-                    b.Navigation("Files");
+                    b.Navigation("FormFiles");
 
                     b.Navigation("Likes");
 

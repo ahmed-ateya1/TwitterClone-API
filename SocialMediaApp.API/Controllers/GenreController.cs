@@ -64,6 +64,38 @@ namespace SocialMediaApp.API.Controllers
         }
 
         /// <summary>
+        /// Gets a genre by ID.
+        /// </summary>
+        /// <param name="id">The ID of the genre.</param>
+        /// <returns>The genre.</returns>
+        [HttpGet("getGenre/{id}")]
+        public async Task<ActionResult<ApiResponse>> GetGenre(Guid id)
+        {
+            try
+            {
+                var genre = await _genreServices.GetByAsync(x => x.GenreID == id);
+                return Ok(new ApiResponse
+                {
+                    IsSuccess = true,
+                    Messages = "Genre fetched successfully",
+                    Result = genre,
+                    StatusCode = HttpStatusCode.OK
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetGenre method: An error occurred while fetched Genre");
+                return StatusCode((int)HttpStatusCode.InternalServerError, new ApiResponse
+                {
+                    StatusCode = HttpStatusCode.InternalServerError,
+                    IsSuccess = false,
+                    Messages = "An error occurred while fetched Genre"
+                });
+            }
+
+        }
+
+        /// <summary>
         /// Creates a new genre.
         /// </summary>
         /// <param name="genreAdd">The genre add request.</param>

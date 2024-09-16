@@ -167,7 +167,7 @@ namespace SocialMediaApp.Core.Services
 
         public async Task<IEnumerable<ProfileResponse>> GetAllAsync(int pageIndex = 1, int pageSize = 10)
         {
-            var profiles = await _unitOfWork.Repository<Domain.Entites.Profile>().GetAllAsync(null, "", null, pageIndex, pageSize);
+            var profiles = await _unitOfWork.Repository<Domain.Entites.Profile>().GetAllAsync(null, "", null,pageIndex, pageSize);
             return _mapper.Map<IEnumerable<ProfileResponse>>(profiles);
         }
 
@@ -192,44 +192,45 @@ namespace SocialMediaApp.Core.Services
 
             ValidationHelper.ValidateModel(profileUpdateRequest);
 
-            var transaction = await _unitOfWork.BeginTransactionAsync();
-
-            try
+            using (var transaction = await _unitOfWork.BeginTransactionAsync())
             {
-                var profile = await _unitOfWork.Repository<Domain.Entites.Profile>().GetByAsync(x => x.ProfileID == profileUpdateRequest.ProfileID)
-                  ?? throw new InvalidOperationException("Profile not found");
+                try
+                {
+                    var profile = await _unitOfWork.Repository<Domain.Entites.Profile>().GetByAsync(x => x.ProfileID == profileUpdateRequest.ProfileID)
+                      ?? throw new InvalidOperationException("Profile not found");
 
-                var userName = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)
-                    ?? throw new UnauthorizedAccessException("User is not authenticated");
+                    var userName = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)
+                        ?? throw new UnauthorizedAccessException("User is not authenticated");
 
-                var user = await _userManager.FindByNameAsync(userName)
-                    ?? throw new InvalidOperationException("User not found");
+                    var user = await _userManager.FindByNameAsync(userName)
+                        ?? throw new InvalidOperationException("User not found");
 
-                var updatedProfile = _mapper.Map(profileUpdateRequest, profile);
+                    var updatedProfile = _mapper.Map(profileUpdateRequest, profile);
 
-                string oldBackgroundUrl = updatedProfile.ProfileBackgroundURL;
-                string oldImgUrl = updatedProfile.ProfileImgURL;
+                    string oldBackgroundUrl = updatedProfile.ProfileBackgroundURL;
+                    string oldImgUrl = updatedProfile.ProfileImgURL;
 
-                updatedProfile.ProfileBackgroundURL = await _fileServices.CreateFile(profileUpdateRequest.ProfileBackground);
-                updatedProfile.ProfileImgURL = await _fileServices.CreateFile(profileUpdateRequest.ProfileImg);
+                    updatedProfile.ProfileBackgroundURL = await _fileServices.CreateFile(profileUpdateRequest.ProfileBackground);
+                    updatedProfile.ProfileImgURL = await _fileServices.CreateFile(profileUpdateRequest.ProfileImg);
 
-                await _profileRepository.UpdateAsync(updatedProfile);
+                    await _profileRepository.UpdateAsync(updatedProfile);
 
-                await Task.WhenAll(
-                    _fileServices.DeleteFile(oldBackgroundUrl),
-                    _fileServices.DeleteFile(oldImgUrl)
-                );
+                    await Task.WhenAll(
+                        _fileServices.DeleteFile(oldBackgroundUrl),
+                        _fileServices.DeleteFile(oldImgUrl)
+                    );
 
-                _logger.LogInformation("Profile updated successfully for user ID {UserID}", user.Id);
+                    _logger.LogInformation("Profile updated successfully for user ID {UserID}", user.Id);
 
-                await _unitOfWork.CommitTransactionAsync();
-                return _mapper.Map<ProfileResponse>(updatedProfile);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Profile update failed");
-                await _unitOfWork.RollbackTransactionAsync();
-                throw;
+                    await _unitOfWork.CommitTransactionAsync();
+                    return _mapper.Map<ProfileResponse>(updatedProfile);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Profile update failed");
+                    await _unitOfWork.RollbackTransactionAsync();
+                    throw;
+                }
             }
         }
     }

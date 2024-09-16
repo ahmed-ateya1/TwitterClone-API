@@ -264,9 +264,9 @@ public class TweetController : ControllerBase
     /// <param name="pageIndex">The page index.</param>
     /// <param name="pageSize">The page size.</param>
     /// <returns>The list of tweets for the specific profile.</returns>
-    [HttpGet("getTweetstoSpecificProfile/{profileID}")]
+    [HttpGet("getTweetsForSpecificProfile/{profileID}")]
     [AllowAnonymous]
-    public async Task<ActionResult<ApiResponse>> GetTweetstoSpecificProfile(Guid profileID, int pageIndex = 1, int pageSize = 10)
+    public async Task<ActionResult<ApiResponse>> GetTweetsForSpecificProfile(Guid profileID, int pageIndex = 1, int pageSize = 10)
     {
         var tweets = await _tweetServices.GetAllAsync(x => x.ProfileID == profileID, x => x.CreatedAt, pageIndex, pageSize);
         return Ok(new ApiResponse
