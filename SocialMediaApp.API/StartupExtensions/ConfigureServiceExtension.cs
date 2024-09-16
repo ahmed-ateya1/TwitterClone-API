@@ -25,6 +25,7 @@ namespace SocialMediaApp.API.StartupExtensions
     {
         public static IServiceCollection ServiceConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddSignalR();
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseSqlServer(configuration.GetConnectionString("connstr"));
