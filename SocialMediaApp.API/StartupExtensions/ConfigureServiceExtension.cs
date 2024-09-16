@@ -90,6 +90,7 @@ namespace SocialMediaApp.API.StartupExtensions
             services.AddScoped<ITweetFilesServices, TweetFilesServices>();
             services.AddScoped<ITweetServices , TweetServices>();
             services.AddScoped<ITweetRepositroy , TweetRepository>();
+            services.AddScoped<IUserConnectionsServices,UserConnectionsServices>();
             services.AddScoped<ICommentServices, CommentServices>();
             services.AddScoped<ICommentRepository , CommentRepository>();
             services.AddScoped<ICommentFilesServices, CommentFilesServices>();

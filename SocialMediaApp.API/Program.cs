@@ -27,13 +27,12 @@ namespace SocialMediaApp.API
 
             app.UseAuthentication();
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
                 endpoints.MapHub<CommentHub>("/commentHub"); 
+                endpoints.MapHub<TotalFollowingUnfollowingHub>("/TotalFollowingUnfollowingHub");
             });
-
             app.Run();
         }
     }
