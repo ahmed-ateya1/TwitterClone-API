@@ -1,5 +1,6 @@
 
 using SocialMediaApp.API.StartupExtensions;
+using SocialMediaApp.Core.Hubs;
 
 namespace SocialMediaApp.API
 {
@@ -28,7 +29,10 @@ namespace SocialMediaApp.API
 
 
             app.MapControllers();
-
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHub<CommentHub>("/commentHub");
+            });
             app.Run();
         }
     }

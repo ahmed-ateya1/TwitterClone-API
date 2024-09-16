@@ -1,12 +1,14 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using SocialMediaApp.Core.Domain.Entites;
 using SocialMediaApp.Core.Domain.IdentityEntites;
 using SocialMediaApp.Core.DTO.CommentDTO;
 using SocialMediaApp.Core.DTO.FilesCommentDTO;
 using SocialMediaApp.Core.Helper;
+using SocialMediaApp.Core.Hubs;
 using SocialMediaApp.Core.IUnitOfWorkConfig;
 using SocialMediaApp.Core.RepositoriesContract;
 using SocialMediaApp.Core.ServicesContract;
@@ -25,6 +27,7 @@ namespace SocialMediaApp.Core.Services
         private readonly ILogger<CommentServices> _logger;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ICommentFilesServices _commentFilesServices;
+        private readonly IHubContext<CommentHub> _commentHubContext;
 
         public CommentServices(
             IUnitOfWork unitOfWork,
@@ -160,11 +163,11 @@ namespace SocialMediaApp.Core.Services
 
             var commentResponse = _mapper.Map<CommentResponse>(comment);
 
-            if (comment != null && comment.ParentComment != null)
+            if (comment != null && comment.Retweets.Any())
             {
                 commentResponse.Replies.AddRange(_mapper.Map<List<CommentResponse>>(comment.Replies));
             }
-
+            await _commentHubContext.Clients.All.SendAsync("ReceiveComment", commentResponse);
             return commentResponse;
         }
 
