@@ -9,7 +9,7 @@ namespace SocialMediaApp.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class UserConnectionsController : ControllerBase
     {
         private readonly IUserConnectionsServices _userConnectionsServices;
@@ -95,6 +95,86 @@ namespace SocialMediaApp.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Unfollow Method : An error occurred while execute Unfollow!");
+                return StatusCode((int)HttpStatusCode.InternalServerError, new ApiResponse
+                {
+                    IsSuccess = false,
+                    Messages = ex.Message,
+                    StatusCode = HttpStatusCode.InternalServerError
+                });
+            }
+        }
+        /// <summary>
+        ///  Get All Following to a specific profile.
+        /// </summary>
+        /// <param name="profileId">The Id of profile you want to get all following.</param>
+        /// <returns>The All Following with FullName , username , bio , profileImg</returns>
+        [HttpGet("Following/{profileId}")]
+        public async Task<ActionResult<ApiResponse>> GetAllFollowing(Guid profileId , int? pageIndex, int? pageSize)
+        {
+            _logger.LogInformation($"Start Get All Following for profile : {profileId}");
+            if(profileId == null)
+            {
+                return BadRequest(new ApiResponse
+                {
+                    IsSuccess = false,
+                    Messages = "profileId is Null, Enter valid value!",
+                    StatusCode = HttpStatusCode.BadRequest
+                });
+            }
+            try
+            {
+                var result = await _userConnectionsServices.GetUserFollowingAsync(profileId, pageIndex, pageSize);
+                _logger.LogInformation("GetAllfollowing method executed successfully!");
+                return StatusCode((int)HttpStatusCode.OK, new ApiResponse
+                {
+                    IsSuccess = true,
+                    Messages = "Return following Done Successfully",
+                    Result = result
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetAllFollowing Method : An error occurred while execution!");
+                return StatusCode((int)HttpStatusCode.InternalServerError, new ApiResponse
+                {
+                    IsSuccess = false,
+                    Messages = ex.Message,
+                    StatusCode = HttpStatusCode.InternalServerError
+                });
+            }
+        }
+        /// <summary>
+        ///  Get All Followers to a specific profile.
+        /// </summary>
+        /// <param name="profileId">The Id of profile you want to get all followers.</param>
+        /// <returns>The All Followers with FullName , username , bio , profileImg</returns>
+        [HttpGet("Followers/{profileId}")]
+        public async Task<ActionResult<ApiResponse>> GetAllFollowers(Guid profileId, int? pageIndex, int? pageSize)
+        {
+            _logger.LogInformation($"Start Get All Followers for profile : {profileId}");
+            if (profileId == null)
+            {
+                return BadRequest(new ApiResponse
+                {
+                    IsSuccess = false,
+                    Messages = "profileId is Null, Enter valid value!",
+                    StatusCode = HttpStatusCode.BadRequest
+                });
+            }
+            try
+            {
+                var result = await _userConnectionsServices.GetUserFollowersAsync(profileId, pageIndex, pageSize);
+                _logger.LogInformation("GetAllfollowers method executed successfully!");
+                return StatusCode((int)HttpStatusCode.OK, new ApiResponse
+                {
+                    IsSuccess = true,
+                    Messages = "Return followers Done Successfully",
+                    Result = result
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetAllFollowers Method : An error occurred while execution!");
                 return StatusCode((int)HttpStatusCode.InternalServerError, new ApiResponse
                 {
                     IsSuccess = false,

@@ -13,6 +13,7 @@ using SocialMediaApp.Core.ServicesContract;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -37,7 +38,7 @@ namespace SocialMediaApp.Core.Services
             _hubContext = hubContext;
         }
 
-        public async Task<UserConnectionsResponse> FollowAsync(Guid followedId)
+        public async Task<FollowResponse> FollowAsync(Guid followedId)
         {
             _logger.LogInformation("Start FollowAsync Service");
             var followedUser = await _unitOfWork.Repository<Domain.Entites.Profile>().GetByAsync(prop => prop.ProfileID == followedId);
@@ -82,12 +83,85 @@ namespace SocialMediaApp.Core.Services
                     // signalR real time
                     await _hubContext.Clients.All.SendAsync("ReceiveFollowingUpdate",followedUser.TotalFollowing,followedUser.TotalFollowers);
                     _logger.LogInformation("Follow Service Done Successully.");
-                    return _mapper.Map<UserConnectionsResponse>(result);
+                    return _mapper.Map<FollowResponse>(result);
                 }
                 catch (Exception ex)
                 {
                     await _unitOfWork.RollbackTransactionAsync();
                     throw new InvalidOperationException("Error in Create UserConnections", ex);
+                }
+            }
+        }
+
+        public async Task<List<UserConnectionsResponse>> GetUserFollowingAsync(Guid profileId , int? pageIndex , int? pageSize )
+        {
+            _logger.LogInformation($"Start Get User following for profile : {profileId}");
+            var profile = await _unitOfWork.Repository<Domain.Entites.Profile>().GetByAsync(prop => prop.ProfileID == profileId);
+            if (profile == null)
+            {
+                _logger.LogWarning("profile not found, Enter valid profileId");
+                throw new Exception("profile not found");
+            }
+            if (pageIndex == null & pageSize == null)
+            {
+                pageIndex = 1;
+                pageSize = 10;
+            }
+            using (var transaction = await _unitOfWork.BeginTransactionAsync())
+            {
+                try
+                {
+                    var Connections = await _unitOfWork.Repository<UserConnections>().GetAllAsync(filter: prop => prop.FollowerID == profileId, orderBy: prop => prop.CreatedAt, pageIndex: (int)pageIndex, pageSize: (int)pageSize);
+                    var FollowingProfiles = new List<Domain.Entites.Profile>();
+                    foreach (var person in Connections)
+                    {
+                        var result = await _unitOfWork.Repository<Domain.Entites.Profile>().GetByAsync(prop => prop.ProfileID == person.FollowedID, includeProperties: "User");
+                        FollowingProfiles.Add(result);
+                    }
+                    _logger.LogInformation("Get following successfully.");
+                    await _unitOfWork.CommitTransactionAsync();
+                    return _mapper.Map<List<UserConnectionsResponse>>(FollowingProfiles);
+                }
+                catch (Exception ex)
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                    throw new InvalidOperationException("Error in Get UserFollowing", ex);
+                }
+            }
+        }
+        public async Task<List<UserConnectionsResponse>> GetUserFollowersAsync(Guid profileId, int? pageIndex, int? pageSize)
+        {
+            _logger.LogInformation($"Start Get user followers for profile : {profileId}");
+            var profile = await _unitOfWork.Repository<Domain.Entites.Profile>().GetByAsync(prop => prop.ProfileID == profileId);
+            if (profile == null)
+            {
+                _logger.LogWarning("profile not found, Enter valid profileId");
+                throw new Exception("profile not found");
+            }
+            if (pageIndex == null & pageSize == null)
+            {
+                pageIndex = 1;
+                pageSize = 10;
+            }
+            using (var transaction = await _unitOfWork.BeginTransactionAsync())
+            {
+                try
+                {
+                    var Connections = await _unitOfWork.Repository<UserConnections>().GetAllAsync(filter: prop => prop.FollowedID == profileId, orderBy: prop => prop.CreatedAt, pageIndex: (int)pageIndex, pageSize: (int)pageSize);
+                    var FollowingProfiles = new List<Domain.Entites.Profile>();
+                    foreach (var person in Connections)
+                    {
+                        var result = await _unitOfWork.Repository<Domain.Entites.Profile>().GetByAsync(prop => prop.ProfileID == person.FollowerID, includeProperties: "User");
+                        FollowingProfiles.Add(result);
+                    }
+                    _logger.LogInformation("Get followers successfully.");
+                    await _unitOfWork.CommitTransactionAsync();
+                    return _mapper.Map<List<UserConnectionsResponse>>(FollowingProfiles);
+                }
+                catch (Exception ex)
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                    throw new InvalidOperationException("Error in Get followers", ex);
                 }
             }
         }
