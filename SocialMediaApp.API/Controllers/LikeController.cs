@@ -124,8 +124,8 @@ namespace SocialMediaApp.API.Controllers
         /// </summary>
         /// <param name="id">The ID of the tweet or comment to get the likes for.</param>
         /// <returns>The response containing the likes for the tweet or comment.</returns>
-        [HttpGet("getLikesFortweetOrComment/{likeID}")]
-        public async Task<ActionResult<ApiResponse>> getLikestweetOrCommen(Guid id)
+        [HttpGet("getLikesFortweetOrComment/{id}")]
+        public async Task<ActionResult<ApiResponse>> getLikestweetOrComment(Guid id)
         {
             if (id == Guid.Empty)
             {
