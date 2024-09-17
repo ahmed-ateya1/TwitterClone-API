@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SocialMediaApp.Core.ServicesContract
 {
-    public interface IProfileServices
+    public interface IProfileServices 
     {
         /// <summary>
         /// Creates a new profile asynchronously.

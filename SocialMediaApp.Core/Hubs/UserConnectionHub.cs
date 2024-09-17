@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 
 namespace SocialMediaApp.Core.Hubs
 {
-    public class TotalFollowingUnfollowingHub : Hub
+     ///<summary>
+     /// Represents a SignalR hub for handling Following and Follow.
+     /// </summary>
+    public class UserConnectionHub : Hub
     {
 
     }

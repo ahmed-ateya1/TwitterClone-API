@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SocialMediaApp.Core.ServicesContract
 {
-    public interface ITweetFilesServices
+    public interface ITweetFilesServices 
     {
         Task<IEnumerable<TweetFiles>> SaveTweetFileAsync(FileTweetAddRequest? fileTweetAdd);
         Task<bool> DeleteTweetFileAsync(IEnumerable<TweetFiles> files);

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SocialMediaApp.Core.ServicesContract
 {
-    public interface ICommentServices
+    public interface ICommentServices 
     {
         Task<CommentResponse> CreateAsync(CommentAddRequest? commentAddRequest);
         Task<CommentResponse> UpdateAsync(CommentUpdateRequest? commentUpdateRequest);

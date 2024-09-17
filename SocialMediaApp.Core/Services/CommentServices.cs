@@ -177,7 +177,7 @@ namespace SocialMediaApp.Core.Services
 
             await ExecuteWithTransaction(async () =>
             {
-                var comment = await _unitOfWork.Repository<Comment>().GetByAsync(x => x.CommentID == commentID);
+                var comment = await _unitOfWork.Repository<Comment>().GetByAsync(x => x.CommentID == commentID ,includeProperties:"Likes");
                 if (comment == null)
                 {
                     throw new InvalidOperationException("Comment not found.");
@@ -194,7 +194,10 @@ namespace SocialMediaApp.Core.Services
                 {
                     await _commentFilesServices.DeleteTweetFileAsync(comment.Files);
                 }
-
+                if(comment.Likes.Any())
+                {
+                    await _unitOfWork.Repository<Like>().RemoveRangeAsync(comment.Likes);
+                }
                 result = await _unitOfWork.Repository<Comment>().DeleteAsync(comment);
 
                 if (result)

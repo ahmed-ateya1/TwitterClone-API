@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SocialMediaApp.Core.ServicesContract
 {
-    public interface IAuthenticationServices
+    public interface IAuthenticationServices 
     {
         Task<AuthenticationResponse> RegisterAsync(RegisterDTO registerDTO);
         Task<AuthenticationResponse> LoginAsync(LoginDTO loginDTO);

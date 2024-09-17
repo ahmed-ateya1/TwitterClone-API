@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SocialMediaApp.Core.ServicesContract
 {
-    public interface IMailingService
+    public interface IMailingService 
     {
         Task SendMessageAsync(string mailTo, string subject, string body, IList<IFormFile>? attach);
     }

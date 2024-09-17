@@ -77,10 +77,10 @@ namespace SocialMediaApp.API.StartupExtensions
             });
             services.Configure<JwtDTO>(configuration.GetSection("JWT"));
             services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
+            services.AddTransient<IMailingService, MailingService>();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IAuthenticationServices, AuthenticationServices>();
-            services.AddTransient<IMailingService, MailingService>();
             services.AddScoped<IFileServices, FileService>();
             services.AddScoped<IProfileRepository, ProfileRepository>();
             services.AddScoped<IProfileServices, ProfileServices>();
@@ -88,12 +88,14 @@ namespace SocialMediaApp.API.StartupExtensions
             services.AddScoped<IGenreServces, GenreServces>();
             services.AddScoped<ITweetFilesRepository, TweetFilesRepository>();
             services.AddScoped<ITweetFilesServices, TweetFilesServices>();
-            services.AddScoped<ITweetServices , TweetServices>();
-            services.AddScoped<ITweetRepositroy , TweetRepository>();
-            services.AddScoped<IUserConnectionsServices,UserConnectionsServices>();
+            services.AddScoped<ITweetServices, TweetServices>();
+            services.AddScoped<ITweetRepositroy, TweetRepository>();
+            services.AddScoped<IUserConnectionsServices, UserConnectionsServices>();
             services.AddScoped<ICommentServices, CommentServices>();
-            services.AddScoped<ICommentRepository , CommentRepository>();
+            services.AddScoped<ICommentRepository, CommentRepository>();
             services.AddScoped<ICommentFilesServices, CommentFilesServices>();
+            services.AddScoped<ILikeRepository, LikeRepository>();
+            services.AddScoped<ILikeServices, LikeServices>();
             services.AddAutoMapper(typeof(ProfileConfig));
             services.AddControllers();
             services.AddEndpointsApiExplorer();

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
 using SocialMediaApp.Core.RepositoriesContract;
+using SocialMediaApp.Core.ServicesContract;
 using System;
 using System.Collections.Generic;
 using System.Linq;

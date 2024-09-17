@@ -19,7 +19,7 @@ namespace SocialMediaApp.Core.Services
     /// <summary>
     /// Service for handling authentication-related operations such as user registration, login, JWT generation, and token management.
     /// </summary>
-    public class AuthenticationServices : IAuthenticationServices
+    public class AuthenticationServices : IAuthenticationServices 
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<ApplicationRole> _roleManager;

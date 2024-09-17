@@ -12,7 +12,7 @@ namespace SocialMediaApp.Core.ServicesContract
     /// <summary>
     /// Represents the contract for genre services.
     /// </summary>
-    public interface IGenreServces
+    public interface IGenreServces 
     {
         /// <summary>
         /// Retrieves all genres asynchronously.

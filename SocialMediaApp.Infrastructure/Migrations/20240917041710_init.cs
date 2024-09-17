@@ -317,6 +317,7 @@ namespace SocialMediaApp.Infrastructure.Migrations
                 columns: table => new
                 {
                     CommentID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TotalLikes = table.Column<long>(type: "bigint", nullable: false),
                     TotalRetweet = table.Column<long>(type: "bigint", nullable: false),
                     TotalComment = table.Column<long>(type: "bigint", nullable: false),
@@ -369,14 +370,33 @@ namespace SocialMediaApp.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CommentFiles",
+                columns: table => new
+                {
+                    CommentFileID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    FileUrl = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    CommentID = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CommentFiles", x => x.CommentFileID);
+                    table.ForeignKey(
+                        name: "FK_CommentFiles_Comments_CommentID",
+                        column: x => x.CommentID,
+                        principalTable: "Comments",
+                        principalColumn: "CommentID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Likes",
                 columns: table => new
                 {
                     LikeID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TweetID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ProfileID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CommentID = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    ProfileID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CommentID = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -475,6 +495,11 @@ namespace SocialMediaApp.Infrastructure.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CommentFiles_CommentID",
+                table: "CommentFiles",
+                column: "CommentID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Comments_ParentCommentID",
                 table: "Comments",
                 column: "ParentCommentID");
@@ -568,6 +593,9 @@ namespace SocialMediaApp.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "CommentFiles");
 
             migrationBuilder.DropTable(
                 name: "ConnectionProfiles");

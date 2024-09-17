@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SocialMediaApp.Core.ServicesContract
 {
-    public interface ITweetServices
+    public interface ITweetServices 
     {
         Task<TweetResponse> CreateAsync(TweetAddRequest? tweetAddRequest);
         Task<TweetResponse> UpdateAsync(TweetUpdateRequest? tweetUpdateRequest);

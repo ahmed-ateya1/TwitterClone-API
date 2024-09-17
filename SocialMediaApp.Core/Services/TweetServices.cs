@@ -114,7 +114,7 @@ namespace SocialMediaApp.Core.Services
 
         public async Task<bool> DeleteAsync(Guid? tweetID)
         {
-            var tweet = await _unitOfWork.Repository<Tweet>().GetByAsync(x => x.TweetID == tweetID , isTracked:true , includeProperties: "Profile,Profile.User,Genre,Files,Comments")
+            var tweet = await _unitOfWork.Repository<Tweet>().GetByAsync(x => x.TweetID == tweetID , isTracked:true , includeProperties: "Profile,Profile.User,Genre,Files,Comments,Likes")
                          ?? throw new InvalidOperationException("Tweet not found");
 
             await ExecuteWithTransaction(async () =>
@@ -122,6 +122,10 @@ namespace SocialMediaApp.Core.Services
                 if(tweet.Comments.Any())
                 {
                     await _unitOfWork.Repository<Comment>().RemoveRangeAsync(tweet.Comments);
+                }
+                if(tweet.Likes.Any())
+                {
+                    await _unitOfWork.Repository<Like>().RemoveRangeAsync(tweet.Likes);
                 }
                 await _unitOfWork.Repository<Tweet>().DeleteAsync(tweet);
             });

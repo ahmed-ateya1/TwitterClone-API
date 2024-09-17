@@ -1,4 +1,5 @@
 ﻿using SocialMediaApp.Core.Domain.Entites;
+using SocialMediaApp.Core.ServicesContract;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SocialMediaApp.Core.ServicesContract
 {
-    public interface IFileServices
+    public interface IFileServices 
     {
         /// <summary>
         /// Creates a new file and saves it to the specified location.

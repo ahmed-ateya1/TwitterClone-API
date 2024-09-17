@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SocialMediaApp.Core.ServicesContract
 {
-    public interface ICommentFilesServices
+    public interface ICommentFilesServices 
     {
         Task<IEnumerable<CommentFiles>> SaveTweetFileAsync(FilesCommentAddRequest? fileCommentAdd);
         Task<bool> DeleteTweetFileAsync(IEnumerable<CommentFiles> files);

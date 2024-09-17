@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SocialMediaApp.Core.ServicesContract
 {
-    public interface IUserConnectionsServices
+    public interface IUserConnectionsServices 
     {
         Task<UserConnectionsResponse> FollowAsync(Guid followedId);
         Task UnfollowAsync(Guid UnfollowedId);

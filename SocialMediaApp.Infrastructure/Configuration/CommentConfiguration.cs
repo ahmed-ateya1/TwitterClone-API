@@ -20,7 +20,6 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
             .IsRequired();
         builder.Property(x => x.CreatedAt)
             .IsRequired();
-
         builder.HasOne(x => x.ParentComment)
             .WithMany(x => x.Replies)
             .HasForeignKey(x => x.ParentCommentID)

@@ -31,7 +31,8 @@ namespace SocialMediaApp.API
             {
                 endpoints.MapControllers();
                 endpoints.MapHub<CommentHub>("/commentHub"); 
-                endpoints.MapHub<TotalFollowingUnfollowingHub>("/TotalFollowingUnfollowingHub");
+                endpoints.MapHub<UserConnectionHub>("/userConnectionHub");
+                endpoints.MapHub<LikeHub>("/likeHub");
             });
             app.Run();
         }

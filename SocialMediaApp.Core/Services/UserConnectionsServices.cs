@@ -26,8 +26,8 @@ namespace SocialMediaApp.Core.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<UserConnectionsServices> _logger;
         private readonly IMapper _mapper;
-        private readonly IHubContext<TotalFollowingUnfollowingHub> _hubContext;
-        public UserConnectionsServices(IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork, ILogger<UserConnectionsServices> logger, IMapper mapper, IHubContext<TotalFollowingUnfollowingHub> hubContext)
+        private readonly IHubContext<UserConnectionHub> _hubContext;
+        public UserConnectionsServices(IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork, ILogger<UserConnectionsServices> logger, IMapper mapper, IHubContext<UserConnectionHub> hubContext)
         {
             _httpContextAccessor = httpContextAccessor;
             _userManager = userManager;

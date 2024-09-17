@@ -173,6 +173,39 @@
             <param name="id">The ID of the genre to delete.</param>
             <returns>The result of the delete operation.</returns>
         </member>
+        <member name="T:SocialMediaApp.API.Controllers.LikeController">
+            <summary>
+            Controller for handling likes on tweets and comments.
+            </summary>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.LikeController.#ctor(SocialMediaApp.Core.ServicesContract.ILikeServices,Microsoft.Extensions.Logging.ILogger{SocialMediaApp.API.Controllers.LikeController})">
+            <summary>
+            Initializes a new instance of the <see cref="T:SocialMediaApp.API.Controllers.LikeController"/> class.
+            </summary>
+            <param name="likeServices">The like services.</param>
+            <param name="logger">The logger.</param>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.LikeController.LikeTweetOrComment(System.Guid)">
+            <summary>
+            Likes a tweet or comment.
+            </summary>
+            <param name="id">The ID of the tweet or comment to like.</param>
+            <returns>The response containing the result of the like operation.</returns>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.LikeController.UnlikeTweetOrComment(System.Guid)">
+            <summary>
+            Unlikes a tweet or comment.
+            </summary>
+            <param name="id">The ID of the tweet or comment to like.</param>
+            <returns>The response containing the result of the unlike operation.</returns>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.LikeController.getLikestweetOrCommen(System.Guid)">
+            <summary>
+            Gets the likes for a tweet or comment.
+            </summary>
+            <param name="id">The ID of the tweet or comment to get the likes for.</param>
+            <returns>The response containing the likes for the tweet or comment.</returns>
+        </member>
         <member name="T:SocialMediaApp.API.Controllers.ProfileController">
             <summary>
             Controller for managing user profiles.
