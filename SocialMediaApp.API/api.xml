@@ -245,6 +245,20 @@
             <param name="UnfollowedId">The Id of profile you want to Unfollow.</param>
             <returns></returns>
         </member>
+        <member name="M:SocialMediaApp.API.Controllers.UserConnectionsController.GetAllFollowing(System.Guid,System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+             Get All Following to a specific profile.
+            </summary>
+            <param name="profileId">The Id of profile you want to get all following.</param>
+            <returns>The All Following with FullName , username , bio , profileImg</returns>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.UserConnectionsController.GetAllFollowers(System.Guid,System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+             Get All Followers to a specific profile.
+            </summary>
+            <param name="profileId">The Id of profile you want to get all followers.</param>
+            <returns>The All Followers with FullName , username , bio , profileImg</returns>
+        </member>
         <member name="T:SocialMediaApp.API.FileServices.FileService">
             <summary>
             Provides file-related services for the application.
