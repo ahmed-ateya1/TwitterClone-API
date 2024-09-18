@@ -7,13 +7,16 @@ using SocialMediaApp.Core.Domain.Entites;
 using SocialMediaApp.Core.Domain.IdentityEntites;
 using SocialMediaApp.Core.DTO.CommentDTO;
 using SocialMediaApp.Core.DTO.FilesCommentDTO;
+using SocialMediaApp.Core.DTO.TweetDTO;
 using SocialMediaApp.Core.Helper;
 using SocialMediaApp.Core.Hubs;
 using SocialMediaApp.Core.IUnitOfWorkConfig;
 using SocialMediaApp.Core.RepositoriesContract;
 using SocialMediaApp.Core.ServicesContract;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace SocialMediaApp.Core.Services
 {
@@ -57,7 +60,43 @@ namespace SocialMediaApp.Core.Services
 
             return userName;
         }
+        private async Task<SocialMediaApp.Core.Domain.Entites.Profile> GetCurrentProfileAsync()
+        {
+            var userName = GetCurrentUserName();
+            var user = await _userManager.FindByNameAsync(userName);
+            if (user == null)
+                throw new UnauthorizedAccessException("User is not authenticated");
 
+            var profile = await _unitOfWork.Repository<SocialMediaApp.Core.Domain.Entites.Profile>().GetByAsync(x => x.User.Id == user.Id)
+                ?? throw new InvalidOperationException("Profile not found");
+
+            return profile;
+        }
+        private async Task<SocialMediaApp.Core.Domain.Entites.Profile> CheckProfile()
+        {
+            var userName = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!String.IsNullOrEmpty(userName))
+            {
+                var user = await _userManager.FindByNameAsync(userName);
+                if (user != null)
+                {
+                    var profile = await _unitOfWork.Repository<SocialMediaApp.Core.Domain.Entites.Profile>().GetByAsync(x => x.User.Id == user.Id);
+                    return profile;
+                }
+            }
+            return null;
+        }
+        private async Task SetLikeStatusAsync(IEnumerable<CommentResponse> comments, Guid profileId)
+        {
+            var commentIds = comments.Select(t => t.CommentID).ToList();
+            var likedComments = await _unitOfWork.Repository<Comment>()
+                .GetAllAsync(l => commentIds.Contains(l.CommentID) && l.ProfileID == profileId);
+
+            foreach (var comment in comments)
+            {
+                comment.IsLiked = comments.Any(l => l.CommentID == comment.CommentID);
+            }
+        }
         private async Task ExecuteWithTransaction(Func<Task> action)
         {
             using (var transaction = await _unitOfWork.BeginTransactionAsync())
@@ -216,13 +255,26 @@ namespace SocialMediaApp.Core.Services
         public async Task<IEnumerable<CommentResponse>> GetAllAsync(Expression<Func<Comment, bool>>? predict, int pageIndex = 1, int pageSize = 5)
         {
             var comments = await _unitOfWork.Repository<Comment>().GetAllAsync(predict, includeProperties: "Profile,Profile.User,Tweet,Files,Replies", null, pageIndex, pageSize);
-            return _mapper.Map<IEnumerable<CommentResponse>>(comments);
+            var result = _mapper.Map<IEnumerable<CommentResponse>>(comments);
+            var profile = await CheckProfile();
+            if(profile!=null)
+            {
+                await SetLikeStatusAsync(result, profile.ProfileID);
+            }
+            return result;
         }
 
         public async Task<CommentResponse> GetByAsync(Expression<Func<Comment, bool>> predict, bool isTracked = true)
         {
             var comment = await _unitOfWork.Repository<Comment>().GetByAsync(predict, isTracked, includeProperties: "Profile,Profile.User,Tweet,Files,Replies");
-            return _mapper.Map<CommentResponse>(comment);
+            var result = _mapper.Map<CommentResponse>(comment);
+            var profile = await CheckProfile();
+            if(profile != null)
+            {
+                var like = await _unitOfWork.Repository<Like>().GetByAsync(x => x.CommentID == comment.CommentID && x.ProfileID == profile.ProfileID);
+                result.IsLiked = like != null;
+            }
+            return result;
         }
 
         public async Task<CommentResponse> UpdateAsync(CommentUpdateRequest? commentUpdateRequest)

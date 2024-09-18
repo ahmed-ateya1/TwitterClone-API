@@ -20,6 +20,7 @@ namespace SocialMediaApp.Core.DTO.CommentDTO
         public string UserName { get; set; }
         public string FullName { get; set; }
         public string ProfileImageUrl { get; set; }
+        public bool IsLiked { get ; set; }
         public List<CommentResponse> Replies { get; set; } = new List<CommentResponse>();
         public List<string> FilesUrl { get; set; } = new List<string>();
     }

@@ -199,12 +199,19 @@
             <param name="id">The ID of the tweet or comment to like.</param>
             <returns>The response containing the result of the unlike operation.</returns>
         </member>
-        <member name="M:SocialMediaApp.API.Controllers.LikeController.getLikestweetOrCommen(System.Guid)">
+        <member name="M:SocialMediaApp.API.Controllers.LikeController.getLikestweetOrComment(System.Guid)">
             <summary>
             Gets the likes for a tweet or comment.
             </summary>
             <param name="id">The ID of the tweet or comment to get the likes for.</param>
             <returns>The response containing the likes for the tweet or comment.</returns>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.LikeController.UserIsLiked(System.Guid)">
+            <summary>
+            Checks if the user has liked a tweet or comment.
+            </summary>
+            <param name="id">The ID of the tweet or comment to check.</param>
+            <returns>The response containing the result of the check.</returns>
         </member>
         <member name="T:SocialMediaApp.API.Controllers.ProfileController">
             <summary>

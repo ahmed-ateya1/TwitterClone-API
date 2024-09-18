@@ -34,7 +34,7 @@ namespace SocialMediaApp.API.Controllers
         /// </summary>
         /// <param name="id">The ID of the tweet or comment to like.</param>
         /// <returns>The response containing the result of the like operation.</returns>
-        [HttpPost("likeTweetOrComment/{likeID}")]
+        [HttpPost("likeTweetOrComment/{id}")]
         public async Task<ActionResult<ApiResponse>> LikeTweetOrComment(Guid id)
         {
             if (id == Guid.Empty)
@@ -79,7 +79,6 @@ namespace SocialMediaApp.API.Controllers
         /// </summary>
         /// <param name="id">The ID of the tweet or comment to like.</param>
         /// <returns>The response containing the result of the unlike operation.</returns>
-
         [HttpDelete("unlikeTweetOrComment/{profileId}")]
         public async Task<ActionResult<ApiResponse>> UnlikeTweetOrComment(Guid id)
         {
@@ -155,6 +154,12 @@ namespace SocialMediaApp.API.Controllers
                 });
             }
         }
+
+        /// <summary>
+        /// Checks if the user has liked a tweet or comment.
+        /// </summary>
+        /// <param name="id">The ID of the tweet or comment to check.</param>
+        /// <returns>The response containing the result of the check.</returns>
         [HttpGet("userIsLiked/{id}")]
         public async Task<ActionResult<ApiResponse>> UserIsLiked(Guid id)
         {

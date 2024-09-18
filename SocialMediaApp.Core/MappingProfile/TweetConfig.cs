@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using SocialMediaApp.Core.Domain.Entites;
 using SocialMediaApp.Core.DTO.TweetDTO;
+using SocialMediaApp.Core.IUnitOfWorkConfig;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,13 @@ namespace SocialMediaApp.Core.MappingProfile
 {
     public class TweetConfig : AutoMapper.Profile
     {
+        private readonly IUnitOfWork _unitOfWork;
+
+        public TweetConfig(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
+
         public TweetConfig()
         {
 

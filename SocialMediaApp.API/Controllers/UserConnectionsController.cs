@@ -36,11 +36,12 @@ namespace SocialMediaApp.API.Controllers
             _logger.LogInformation($"Start Follow with followedId : {followedId}");
             if (followedId == null)
             {
-                return BadRequest(new ApiResponse{
+                return BadRequest(new ApiResponse
+                {
                     IsSuccess = false,
                     Messages = "FollowedId is Null, Enter valid value!",
                     StatusCode = HttpStatusCode.BadRequest
-                }) ;
+                });
             }
             try
             {
@@ -109,10 +110,10 @@ namespace SocialMediaApp.API.Controllers
         /// <param name="profileId">The Id of profile you want to get all following.</param>
         /// <returns>The All Following with FullName , username , bio , profileImg</returns>
         [HttpGet("Following/{profileId}")]
-        public async Task<ActionResult<ApiResponse>> GetAllFollowing(Guid profileId , int? pageIndex, int? pageSize)
+        public async Task<ActionResult<ApiResponse>> GetAllFollowing(Guid profileId, int? pageIndex, int? pageSize)
         {
             _logger.LogInformation($"Start Get All Following for profile : {profileId}");
-            if(profileId == null)
+            if (profileId == null)
             {
                 return BadRequest(new ApiResponse
                 {

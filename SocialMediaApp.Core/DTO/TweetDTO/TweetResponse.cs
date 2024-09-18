@@ -18,6 +18,7 @@ namespace SocialMediaApp.Core.DTO.TweetDTO
         public string FullName { get; set; }
         public string ProfilePictureURL { get; set; }
         public string GenreName { get; set; }
+        public bool IsLiked { get; set; }
         public List<string> FilesURL { get; set; } = new List<string>();
     }
 }

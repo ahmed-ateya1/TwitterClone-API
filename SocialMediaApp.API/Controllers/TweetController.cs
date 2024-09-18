@@ -215,7 +215,6 @@ public class TweetController : ControllerBase
     /// <param name="pageSize">The page size.</param>
     /// <returns>The list of tweets.</returns>
     [HttpGet("getTweets")]
-    [AllowAnonymous]
     public async Task<ActionResult<ApiResponse>> GetTweets(int pageIndex = 1, int pageSize = 10)
     {
         var tweets = await _tweetServices.GetAllAsync(null, x => x.CreatedAt, pageIndex, pageSize);
@@ -234,7 +233,6 @@ public class TweetController : ControllerBase
     /// <param name="tweetID">The ID of the tweet.</param>
     /// <returns>The tweet.</returns>
     [HttpGet("getTweet/{tweetID}")]
-    [AllowAnonymous]
     public async Task<ActionResult<ApiResponse>> GetTweet(Guid tweetID)
     {
         var tweet = await _tweetServices.GetByAsync(x => x.TweetID == tweetID);
@@ -265,7 +263,6 @@ public class TweetController : ControllerBase
     /// <param name="pageSize">The page size.</param>
     /// <returns>The list of tweets for the specific profile.</returns>
     [HttpGet("getTweetsForSpecificProfile/{profileID}")]
-    [AllowAnonymous]
     public async Task<ActionResult<ApiResponse>> GetTweetsForSpecificProfile(Guid profileID, int pageIndex = 1, int pageSize = 10)
     {
         var tweets = await _tweetServices.GetAllAsync(x => x.ProfileID == profileID, x => x.CreatedAt, pageIndex, pageSize);
