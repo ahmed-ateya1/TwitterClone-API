@@ -40,7 +40,8 @@ namespace SocialMediaApp.Core.Services
             ILogger<CommentServices> logger,
             UserManager<ApplicationUser> userManager,
             ICommentFilesServices commentFilesServices,
-            ITweetRepositroy tweetRepositroy)
+            ITweetRepositroy tweetRepositroy,
+            IHubContext<CommentHub> commentHubContext)
         {
             _unitOfWork = unitOfWork;
             _commentRepository = commentRepository;
@@ -50,6 +51,7 @@ namespace SocialMediaApp.Core.Services
             _userManager = userManager;
             _commentFilesServices = commentFilesServices;
             _tweetRepositroy = tweetRepositroy;
+            _commentHubContext = commentHubContext;
         }
 
         private string GetCurrentUserName()

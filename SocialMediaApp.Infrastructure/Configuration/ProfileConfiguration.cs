@@ -40,10 +40,6 @@ public class ProfileConfiguration : IEntityTypeConfiguration<Profile>
             .HasForeignKey<Profile>(x => x.UserID)
             .OnDelete(DeleteBehavior.Cascade);
 
-        //builder.HasMany(x => x.Retweets)
-        //    .WithOne(x => x.Profile)
-        //    .HasForeignKey(x => x.ProfileID)
-        //    .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasMany(x => x.UserConnections)
             .WithMany(x => x.Profiles)

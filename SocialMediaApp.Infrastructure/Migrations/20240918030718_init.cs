@@ -394,7 +394,7 @@ namespace SocialMediaApp.Infrastructure.Migrations
                 {
                     LikeID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TweetID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TweetID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ProfileID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CommentID = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },

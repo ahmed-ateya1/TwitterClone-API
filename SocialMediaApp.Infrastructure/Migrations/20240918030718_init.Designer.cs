@@ -12,7 +12,7 @@ using SocialMediaApp.Infrastructure.Data;
 namespace SocialMediaApp.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240917041710_init")]
+    [Migration("20240918030718_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -238,7 +238,7 @@ namespace SocialMediaApp.Infrastructure.Migrations
                     b.Property<Guid?>("ProfileID")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("TweetID")
+                    b.Property<Guid?>("TweetID")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("LikeID");
@@ -659,8 +659,7 @@ namespace SocialMediaApp.Infrastructure.Migrations
                     b.HasOne("SocialMediaApp.Core.Domain.Entites.Tweet", "Tweet")
                         .WithMany("Likes")
                         .HasForeignKey("TweetID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Comment");
 

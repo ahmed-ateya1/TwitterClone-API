@@ -10,6 +10,7 @@ using SocialMediaApp.Core.Helper;
 using SocialMediaApp.Core.IUnitOfWorkConfig;
 using SocialMediaApp.Core.RepositoriesContract;
 using SocialMediaApp.Core.ServicesContract;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
 
@@ -57,7 +58,7 @@ public class TweetServices : ITweetServices
         if (user == null)
             throw new UnauthorizedAccessException("User is not authenticated");
 
-        var profile = await _unitOfWork.Repository<SocialMediaApp.Core.Domain.Entites.Profile>().GetByAsync(x => x.User.Id == user.Id)
+        var profile = await _unitOfWork.Repository<SocialMediaApp.Core.Domain.Entites.Profile>().GetByAsync(x => x.User.Id == user.Id,includeProperties:"User")
             ?? throw new InvalidOperationException("Profile not found");
 
         return profile;
@@ -112,7 +113,7 @@ public class TweetServices : ITweetServices
     {
         var tweetIds = tweets.Select(t => t.TweetID).ToList();
         var likedTweets = await _unitOfWork.Repository<Like>()
-            .GetAllAsync(l => tweetIds.Contains(l.TweetID) && l.ProfileID == profileId);
+            .GetAllAsync(l => tweetIds.Contains((Guid)l.TweetID) && l.ProfileID == profileId);
 
         foreach (var tweet in tweets)
         {
@@ -141,13 +142,11 @@ public class TweetServices : ITweetServices
             tweet.ProfileID = profileUser.ProfileID;
             tweet.Profile = profileUser;
             tweet.Genre = genre;
+            tweet.IsUpdated = false;
             await _unitOfWork.Repository<Tweet>().CreateAsync(tweet);
             tweet.Files = await HandleTweetFilesAsync(tweetAddRequest.TweetFiles, tweet.TweetID);
         });
-
-        var tweetResponse = _mapper.Map<TweetResponse>(tweet);
-        tweetResponse.UserName = userName;
-        return tweetResponse;
+        return _mapper.Map<TweetResponse>(tweet);
     }
 
     public async Task<bool> DeleteAsync(Guid? tweetID)
