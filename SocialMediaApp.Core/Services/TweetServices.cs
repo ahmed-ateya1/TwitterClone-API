@@ -10,8 +10,10 @@ using SocialMediaApp.Core.Helper;
 using SocialMediaApp.Core.IUnitOfWorkConfig;
 using SocialMediaApp.Core.RepositoriesContract;
 using SocialMediaApp.Core.ServicesContract;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 public class TweetServices : ITweetServices
 {
@@ -101,7 +103,7 @@ public class TweetServices : ITweetServices
         return new List<TweetFiles>();
     }
 
-    private async Task SetLikeStatusAsync(IEnumerable<TweetResponse> tweets, Guid profileId)
+    private async Task SetLikeAndRetweetStatusAsync(IEnumerable<TweetResponse> tweets, Guid profileId)
     {
         var tweetIds = tweets.Select(t => t.TweetID).ToList();
         var likedTweets = await _unitOfWork.Repository<Like>()
@@ -110,17 +112,12 @@ public class TweetServices : ITweetServices
         foreach (var tweet in tweets)
         {
             tweet.IsLiked = likedTweets.Any(l => l.TweetID == tweet.TweetID);
-        }
-    }
-
-    public async Task SetRetweetStatusAsync(IEnumerable<TweetResponse> tweets, Guid profileId)
-    {
-        var tweetIds = tweets.Select(t => t.TweetID).ToList();
-        var retweetedTweets = await _unitOfWork.Repository<Tweet>()
-            .GetAllAsync(l => tweetIds.Contains((Guid)l.ParentTweetID) && l.ProfileID == profileId);
-        foreach (var tweet in tweets)
-        {
-            tweet.IsRetweeted = retweetedTweets.Any(l => l.ParentTweetID == tweet.TweetID);
+            var retweet = await _unitOfWork.Repository<Tweet>()
+              .GetByAsync(x => x.ParentTweetID == tweet.TweetID && x.ProfileID == profileId);
+            if (retweet != null)
+            {
+                tweet.IsRetweeted = true;
+            }
         }
     }
 
@@ -162,7 +159,12 @@ public class TweetServices : ITweetServices
             await _unitOfWork.Repository<Tweet>().CreateAsync(tweet);
             tweet.Files = await HandleTweetFilesAsync(tweetAddRequest.TweetFiles, tweet.TweetID);
         });
-        return _mapper.Map<TweetResponse>(tweet);
+        var response =  _mapper.Map<TweetResponse>(tweet);
+        if(tweet!=null && tweet.ParentTweet != null)
+        {
+            response.ParentTweet = _mapper.Map<TweetResponse>(tweet.ParentTweet);
+        }
+        return response;
     }
 
     public async Task<bool> DeleteAsync(Guid? tweetID)
@@ -193,7 +195,7 @@ public class TweetServices : ITweetServices
 
             tasks.Add(_unitOfWork.Repository<Tweet>().DeleteAsync(tweet));
 
-            await Task.WhenAll(tasks); 
+            await Task.WhenAll(tasks);
         });
 
         return true;
@@ -208,18 +210,16 @@ public class TweetServices : ITweetServices
     {
         var tweets = await _unitOfWork.Repository<Tweet>().GetAllAsync(
             filter,
-            "Profile,Profile.User,Genre,Files",
+            "Profile,Profile.User,Genre,Files,ParentTweet,Retweets",
             orderBy,
             pageIndex,
             pageSize);
 
         var tweetResponses = _mapper.Map<IEnumerable<TweetResponse>>(tweets);
-
         var profile = await GetProfileIfAvailable();
-        if (profile != null)
+        if (tweetResponses.Any()&&profile != null)
         {
-            await SetLikeStatusAsync(tweetResponses, profile.ProfileID);
-            await SetRetweetStatusAsync(tweetResponses, profile.ProfileID);
+            await SetLikeAndRetweetStatusAsync(tweetResponses, profile.ProfileID);
         }
         return tweetResponses;
     }
@@ -236,12 +236,15 @@ public class TweetServices : ITweetServices
         if (profile != null)
         {
             var like = await _unitOfWork.Repository<Like>().GetByAsync(x => x.TweetID == tweet.TweetID && x.ProfileID == profile.ProfileID);
-            var retweet = await _unitOfWork.Repository<Tweet>().GetByAsync(x => x.ParentTweetID == tweet.ParentTweetID && x.ProfileID == profile.ProfileID);
+            var retweet = await _unitOfWork.Repository<Tweet>().GetByAsync(x => x.ParentTweetID == tweet.TweetID && x.ProfileID == profile.ProfileID);
+
             result.IsRetweeted = retweet != null;
             result.IsLiked = like != null;
         }
+
         return result;
     }
+
 
     public async Task<TweetResponse> UpdateAsync(TweetUpdateRequest? tweetUpdateRequest)
     {
@@ -267,7 +270,6 @@ public class TweetServices : ITweetServices
             await _tweetRepositroy.UpdateAsync(tweet);
         });
 
-        return
- _mapper.Map<TweetResponse>(tweet);
+        return _mapper.Map<TweetResponse>(tweet);
     }
 }

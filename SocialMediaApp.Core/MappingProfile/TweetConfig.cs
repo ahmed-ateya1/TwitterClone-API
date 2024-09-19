@@ -35,7 +35,6 @@ namespace SocialMediaApp.Core.MappingProfile
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Profile.User.UserName))
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.Profile.FullName))
                 .ForMember(dest => dest.ProfilePictureURL, opt => opt.MapFrom(src => src.Profile.ProfileImgURL))
-                .ForMember(dest=>dest.ParentTweetContent , opt=>opt.MapFrom(src=>src.ParentTweet.Content))
                 .ForMember(dest => dest.GenreName, opt => opt.MapFrom(src => src.Genre.GenreName))
                 .ForMember(dest => dest.FilesURL, opt => opt.MapFrom(src => src.Files.Select(x => x.FileURL).ToList()))
                 .ReverseMap();

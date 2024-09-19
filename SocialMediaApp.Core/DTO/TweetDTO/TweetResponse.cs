@@ -20,8 +20,9 @@ namespace SocialMediaApp.Core.DTO.TweetDTO
         public string? GenreName { get; set; }
         public bool IsLiked { get; set; }
         public List<string> FilesURL { get; set; } = new List<string>();
-        public Guid? ParentTweetID { get; set; }
-        public string? ParentTweetContent { get; set; }
+        //public Guid? ParentTweetID { get; set; }
+        //public string? ParentTweetContent { get; set; }
+        public TweetResponse? ParentTweet { get; set; }
         public bool IsRetweeted { get; set; }
     }
 }
