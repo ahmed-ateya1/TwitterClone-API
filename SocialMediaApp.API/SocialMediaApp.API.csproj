@@ -32,8 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Upload\" />
-    <Folder Include="wwwroot\" />
+    <Folder Include="wwwroot\Upload\" />
   </ItemGroup>
 
 </Project>

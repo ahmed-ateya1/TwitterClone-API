@@ -46,6 +46,10 @@ namespace SocialMediaApp.Infrastructure.Configuration
                 .HasForeignKey(x => x.ProfileID)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            builder.HasOne(x=>x.ParentTweet)
+                .WithMany(x => x.Retweets)
+                .HasForeignKey(x => x.ParentTweetID)
+                .OnDelete(DeleteBehavior.Restrict);
             builder.ToTable("Tweets");
         }
     }

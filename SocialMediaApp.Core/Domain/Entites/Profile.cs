@@ -24,7 +24,6 @@ namespace SocialMediaApp.Core.Domain.Entites
         public Guid UserID { get; set; }
         public ApplicationUser User { get; set; }
         public ICollection<Tweet> Tweets { get; set; } = new List<Tweet>();
-        public ICollection<Retweet> Retweets { get; set; } = new List<Retweet>();
         public ICollection<Like> Likes { get; set; } = new List<Like>();
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();

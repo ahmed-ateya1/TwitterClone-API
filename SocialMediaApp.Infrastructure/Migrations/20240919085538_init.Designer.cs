@@ -12,7 +12,7 @@ using SocialMediaApp.Infrastructure.Data;
 namespace SocialMediaApp.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240918030718_init")]
+    [Migration("20240919085538_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -333,37 +333,6 @@ namespace SocialMediaApp.Infrastructure.Migrations
                     b.ToTable("Profiles", (string)null);
                 });
 
-            modelBuilder.Entity("SocialMediaApp.Core.Domain.Entites.Retweet", b =>
-                {
-                    b.Property<Guid>("RetweetID")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CommentID")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("ProfileID")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("TweetID")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("RetweetID");
-
-                    b.HasIndex("CommentID");
-
-                    b.HasIndex("ProfileID");
-
-                    b.HasIndex("TweetID");
-
-                    b.ToTable("Retweets", (string)null);
-                });
-
             modelBuilder.Entity("SocialMediaApp.Core.Domain.Entites.Tweet", b =>
                 {
                     b.Property<Guid>("TweetID")
@@ -376,11 +345,14 @@ namespace SocialMediaApp.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("GenreID")
+                    b.Property<Guid?>("GenreID")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsUpdated")
                         .HasColumnType("bit");
+
+                    b.Property<Guid?>("ParentTweetID")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("ProfileID")
                         .HasColumnType("uniqueidentifier");
@@ -400,6 +372,8 @@ namespace SocialMediaApp.Infrastructure.Migrations
                     b.HasKey("TweetID");
 
                     b.HasIndex("GenreID");
+
+                    b.HasIndex("ParentTweetID");
 
                     b.HasIndex("ProfileID");
 
@@ -690,40 +664,17 @@ namespace SocialMediaApp.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("SocialMediaApp.Core.Domain.Entites.Retweet", b =>
-                {
-                    b.HasOne("SocialMediaApp.Core.Domain.Entites.Comment", "Comment")
-                        .WithMany("Retweets")
-                        .HasForeignKey("CommentID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SocialMediaApp.Core.Domain.Entites.Profile", "Profile")
-                        .WithMany("Retweets")
-                        .HasForeignKey("ProfileID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("SocialMediaApp.Core.Domain.Entites.Tweet", "Tweet")
-                        .WithMany("Retweets")
-                        .HasForeignKey("TweetID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Comment");
-
-                    b.Navigation("Profile");
-
-                    b.Navigation("Tweet");
-                });
-
             modelBuilder.Entity("SocialMediaApp.Core.Domain.Entites.Tweet", b =>
                 {
                     b.HasOne("SocialMediaApp.Core.Domain.Entites.Genre", "Genre")
                         .WithMany("Tweets")
                         .HasForeignKey("GenreID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SocialMediaApp.Core.Domain.Entites.Tweet", "ParentTweet")
+                        .WithMany("Retweets")
+                        .HasForeignKey("ParentTweetID")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("SocialMediaApp.Core.Domain.Entites.Profile", "Profile")
                         .WithMany("Tweets")
@@ -732,6 +683,8 @@ namespace SocialMediaApp.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Genre");
+
+                    b.Navigation("ParentTweet");
 
                     b.Navigation("Profile");
                 });
@@ -791,8 +744,6 @@ namespace SocialMediaApp.Infrastructure.Migrations
                     b.Navigation("Likes");
 
                     b.Navigation("Replies");
-
-                    b.Navigation("Retweets");
                 });
 
             modelBuilder.Entity("SocialMediaApp.Core.Domain.Entites.Genre", b =>
@@ -809,8 +760,6 @@ namespace SocialMediaApp.Infrastructure.Migrations
                     b.Navigation("Likes");
 
                     b.Navigation("Notifications");
-
-                    b.Navigation("Retweets");
 
                     b.Navigation("Tweets");
                 });

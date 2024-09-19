@@ -27,7 +27,6 @@ namespace SocialMediaApp.Infrastructure.Repositories
 
             _db.Entry(commentToUpdate).CurrentValues.SetValues(comment);
             commentToUpdate.UpdatedAt = DateTime.UtcNow;
-            commentToUpdate.IsUpdated = true;
             await SaveAsync();
             return commentToUpdate;
         }

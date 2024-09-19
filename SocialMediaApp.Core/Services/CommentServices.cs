@@ -204,7 +204,7 @@ namespace SocialMediaApp.Core.Services
 
             var commentResponse = _mapper.Map<CommentResponse>(comment);
 
-            if (comment != null && comment.Retweets.Any())
+            if (comment != null && comment.Replies.Any())
             {
                 commentResponse.Replies.AddRange(_mapper.Map<List<CommentResponse>>(comment.Replies));
             }

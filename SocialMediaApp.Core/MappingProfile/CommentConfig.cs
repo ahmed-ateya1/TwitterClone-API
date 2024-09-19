@@ -15,6 +15,7 @@ namespace SocialMediaApp.Core.MappingProfile
             CreateMap<CommentAddRequest, Comment>()
                 .ReverseMap();
             CreateMap<CommentUpdateRequest, Comment>()
+                .ForMember(x=>x.IsUpdated, opt => opt.MapFrom(src => true))
                 .ReverseMap();
             CreateMap<Comment, CommentResponse>()
                 .ForMember(dest => dest.FilesUrl, opt => opt.MapFrom(src => src.Files.Select(x => x.FileUrl).ToList()))

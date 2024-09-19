@@ -293,7 +293,8 @@ namespace SocialMediaApp.Infrastructure.Migrations
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ProfileID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    GenreID = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    GenreID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ParentTweetID = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -310,6 +311,12 @@ namespace SocialMediaApp.Infrastructure.Migrations
                         principalTable: "Profiles",
                         principalColumn: "ProfileID",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Tweets_Tweets_ParentTweetID",
+                        column: x => x.ParentTweetID,
+                        principalTable: "Tweets",
+                        principalColumn: "TweetID",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -421,40 +428,6 @@ namespace SocialMediaApp.Infrastructure.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Retweets",
-                columns: table => new
-                {
-                    RetweetID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ProfileID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TweetID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CommentID = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Retweets", x => x.RetweetID);
-                    table.ForeignKey(
-                        name: "FK_Retweets_Comments_CommentID",
-                        column: x => x.CommentID,
-                        principalTable: "Comments",
-                        principalColumn: "CommentID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Retweets_Profiles_ProfileID",
-                        column: x => x.ProfileID,
-                        principalTable: "Profiles",
-                        principalColumn: "ProfileID",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Retweets_Tweets_TweetID",
-                        column: x => x.TweetID,
-                        principalTable: "Tweets",
-                        principalColumn: "TweetID",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -546,21 +519,6 @@ namespace SocialMediaApp.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Retweets_CommentID",
-                table: "Retweets",
-                column: "CommentID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Retweets_ProfileID",
-                table: "Retweets",
-                column: "ProfileID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Retweets_TweetID",
-                table: "Retweets",
-                column: "TweetID");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_TweetFiles_TweetID",
                 table: "TweetFiles",
                 column: "TweetID");
@@ -569,6 +527,11 @@ namespace SocialMediaApp.Infrastructure.Migrations
                 name: "IX_Tweets_GenreID",
                 table: "Tweets",
                 column: "GenreID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tweets_ParentTweetID",
+                table: "Tweets",
+                column: "ParentTweetID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tweets_ProfileID",
@@ -608,9 +571,6 @@ namespace SocialMediaApp.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "RefreshToken");
-
-            migrationBuilder.DropTable(
-                name: "Retweets");
 
             migrationBuilder.DropTable(
                 name: "TweetFiles");

@@ -10,7 +10,6 @@ using SocialMediaApp.Core.Helper;
 using SocialMediaApp.Core.IUnitOfWorkConfig;
 using SocialMediaApp.Core.RepositoriesContract;
 using SocialMediaApp.Core.ServicesContract;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
 
@@ -51,32 +50,17 @@ public class TweetServices : ITweetServices
         return userName;
     }
 
-    private async Task<SocialMediaApp.Core.Domain.Entites.Profile> GetCurrentProfileAsync()
+    private async Task<SocialMediaApp.Core.Domain.Entites.Profile?> GetProfileIfAvailable()
     {
         var userName = GetCurrentUserName();
+        if (userName == null) return null;
+
         var user = await _userManager.FindByNameAsync(userName);
-        if (user == null)
-            throw new UnauthorizedAccessException("User is not authenticated");
+        if (user == null) return null;
 
-        var profile = await _unitOfWork.Repository<SocialMediaApp.Core.Domain.Entites.Profile>().GetByAsync(x => x.User.Id == user.Id,includeProperties:"User")
-            ?? throw new InvalidOperationException("Profile not found");
+        return await _unitOfWork.Repository<SocialMediaApp.Core.Domain.Entites.Profile>().GetByAsync(x => x.User.Id == user.Id);
+    }
 
-        return profile;
-    }
-    private async Task<SocialMediaApp.Core.Domain.Entites.Profile> CheckProfile()
-    {
-        var userName = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (!String.IsNullOrEmpty(userName))
-        {
-            var user = await _userManager.FindByNameAsync(userName);
-            if (user != null)
-            {
-                var profile = await _unitOfWork.Repository<SocialMediaApp.Core.Domain.Entites.Profile>().GetByAsync(x => x.User.Id == user.Id);
-                return profile;
-            }
-        }
-        return null;
-    }
     private async Task ExecuteWithTransaction(Func<Task> action)
     {
         using (var transaction = await _unitOfWork.BeginTransactionAsync())
@@ -99,12 +83,20 @@ public class TweetServices : ITweetServices
     {
         if (formFiles != null && formFiles.Any())
         {
-            var fileTweetAdd = new FileTweetAddRequest()
+            try
             {
-                formFiles = formFiles.ToList(),
-                TweetID = tweetId
-            };
-            return (await _tweetFilesServices.SaveTweetFileAsync(fileTweetAdd)).ToList();
+                var fileTweetAdd = new FileTweetAddRequest()
+                {
+                    formFiles = formFiles.ToList(),
+                    TweetID = tweetId
+                };
+                return (await _tweetFilesServices.SaveTweetFileAsync(fileTweetAdd)).ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error saving tweet files");
+                throw;
+            }
         }
         return new List<TweetFiles>();
     }
@@ -121,27 +113,51 @@ public class TweetServices : ITweetServices
         }
     }
 
+    public async Task SetRetweetStatusAsync(IEnumerable<TweetResponse> tweets, Guid profileId)
+    {
+        var tweetIds = tweets.Select(t => t.TweetID).ToList();
+        var retweetedTweets = await _unitOfWork.Repository<Tweet>()
+            .GetAllAsync(l => tweetIds.Contains((Guid)l.ParentTweetID) && l.ProfileID == profileId);
+        foreach (var tweet in tweets)
+        {
+            tweet.IsRetweeted = retweetedTweets.Any(l => l.ParentTweetID == tweet.TweetID);
+        }
+    }
+
     public async Task<TweetResponse> CreateAsync(TweetAddRequest? tweetAddRequest)
     {
         if (tweetAddRequest == null) throw new ArgumentNullException(nameof(tweetAddRequest));
         ValidationHelper.ValidateModel(tweetAddRequest);
 
-        var userName = GetCurrentUserName();
+        var profile = await GetProfileIfAvailable()
+                      ?? throw new InvalidOperationException("Profile not found");
+
         Tweet tweet = null;
 
         await ExecuteWithTransaction(async () =>
         {
-            var profileUser = await GetCurrentProfileAsync();
-
-            var genre = await _unitOfWork.Repository<Genre>()
-                .GetByAsync(x => x.GenreID == tweetAddRequest.GenreID)
-                ?? throw new InvalidOperationException("Genre not found");
-
             tweet = _mapper.Map<Tweet>(tweetAddRequest);
+            if (tweetAddRequest.ParentTweetID != null)
+            {
+                var parentTweet = await _unitOfWork.Repository<Tweet>()
+                    .GetByAsync(x => x.TweetID == tweetAddRequest.ParentTweetID, isTracked: true)
+                    ?? throw new InvalidOperationException("Parent tweet not found");
+
+                tweet.ParentTweet = parentTweet;
+                tweet.ParentTweetID = parentTweet.TweetID;
+                tweet.ParentTweet.TotalRetweets++;
+                await _tweetRepositroy.UpdateAsync(parentTweet);
+            }
             tweet.TweetID = Guid.NewGuid();
-            tweet.ProfileID = profileUser.ProfileID;
-            tweet.Profile = profileUser;
-            tweet.Genre = genre;
+            tweet.ProfileID = profile.ProfileID;
+            tweet.Profile = profile;
+            if (tweetAddRequest.GenreID != null)
+            {
+                var genre = await _unitOfWork.Repository<Genre>().GetByAsync(x => x.GenreID == tweetAddRequest.GenreID)
+                    ?? throw new InvalidOperationException("Genre not found");
+                tweet.GenreID = genre.GenreID;
+                tweet.Genre = genre;
+            }
             tweet.IsUpdated = false;
             await _unitOfWork.Repository<Tweet>().CreateAsync(tweet);
             tweet.Files = await HandleTweetFilesAsync(tweetAddRequest.TweetFiles, tweet.TweetID);
@@ -151,24 +167,38 @@ public class TweetServices : ITweetServices
 
     public async Task<bool> DeleteAsync(Guid? tweetID)
     {
-        var tweet = await _unitOfWork.Repository<Tweet>().GetByAsync(x => x.TweetID == tweetID, isTracked: true, includeProperties: "Profile,Profile.User,Genre,Files,Comments,Likes")
-                         ?? throw new InvalidOperationException("Tweet not found");
+        var tweet = await _unitOfWork.Repository<Tweet>()
+            .GetByAsync(x => x.TweetID == tweetID, isTracked: true, includeProperties: "Profile,Profile.User,Genre,Files,Comments,Likes,Retweets")
+            ?? throw new InvalidOperationException("Tweet not found");
 
         await ExecuteWithTransaction(async () =>
         {
+            var childTweets = await _unitOfWork.Repository<Tweet>().GetAllAsync(x => x.ParentTweetID == tweetID);
+            foreach (var childTweet in childTweets)
+            {
+                childTweet.ParentTweetID = null;
+                await _tweetRepositroy.UpdateAsync(childTweet);
+            }
+
+            var tasks = new List<Task>();
+
+            if (tweet.Retweets.Any())
+                tasks.Add(_unitOfWork.Repository<Tweet>().RemoveRangeAsync(tweet.Retweets));
+
             if (tweet.Comments.Any())
-            {
-                await _unitOfWork.Repository<Comment>().RemoveRangeAsync(tweet.Comments);
-            }
+                tasks.Add(_unitOfWork.Repository<Comment>().RemoveRangeAsync(tweet.Comments));
+
             if (tweet.Likes.Any())
-            {
-                await _unitOfWork.Repository<Like>().RemoveRangeAsync(tweet.Likes);
-            }
-            await _unitOfWork.Repository<Tweet>().DeleteAsync(tweet);
+                tasks.Add(_unitOfWork.Repository<Like>().RemoveRangeAsync(tweet.Likes));
+
+            tasks.Add(_unitOfWork.Repository<Tweet>().DeleteAsync(tweet));
+
+            await Task.WhenAll(tasks); 
         });
 
         return true;
     }
+
 
     public async Task<IEnumerable<TweetResponse>> GetAllAsync(
         Expression<Func<Tweet, bool>>? filter = null,
@@ -185,11 +215,11 @@ public class TweetServices : ITweetServices
 
         var tweetResponses = _mapper.Map<IEnumerable<TweetResponse>>(tweets);
 
-        var profile = await CheckProfile();
-        if(profile != null)
+        var profile = await GetProfileIfAvailable();
+        if (profile != null)
         {
             await SetLikeStatusAsync(tweetResponses, profile.ProfileID);
-
+            await SetRetweetStatusAsync(tweetResponses, profile.ProfileID);
         }
         return tweetResponses;
     }
@@ -197,15 +227,17 @@ public class TweetServices : ITweetServices
     public async Task<TweetResponse> GetByAsync(Expression<Func<Tweet, bool>>? filter = null, bool isTracked = true)
     {
         var tweet = await _unitOfWork.Repository<Tweet>()
-            .GetByAsync(filter, isTracked, "Profile,Profile.User,Genre,Files,Comments")
+            .GetByAsync(filter, isTracked, "Profile,Profile.User,Genre,Files,ParentTweet,Comments")
             ?? throw new InvalidOperationException("Tweet not found");
 
         var result = _mapper.Map<TweetResponse>(tweet);
 
-        var profile = await CheckProfile();
+        var profile = await GetProfileIfAvailable();
         if (profile != null)
         {
             var like = await _unitOfWork.Repository<Like>().GetByAsync(x => x.TweetID == tweet.TweetID && x.ProfileID == profile.ProfileID);
+            var retweet = await _unitOfWork.Repository<Tweet>().GetByAsync(x => x.ParentTweetID == tweet.ParentTweetID && x.ProfileID == profile.ProfileID);
+            result.IsRetweeted = retweet != null;
             result.IsLiked = like != null;
         }
         return result;
@@ -220,7 +252,7 @@ public class TweetServices : ITweetServices
         await ExecuteWithTransaction(async () =>
         {
             tweet = await _unitOfWork.Repository<Tweet>()
-                .GetByAsync(x => x.TweetID == tweetUpdateRequest.TweetID, true, "Profile,Profile.User,Genre,Files,Comments")
+                .GetByAsync(x => x.TweetID == tweetUpdateRequest.TweetID, true, "Profile,Profile.User,Genre,Files,Comments,ParentTweet")
                 ?? throw new InvalidOperationException("Tweet not found");
 
             if (tweetUpdateRequest.TweetFiles != null && tweetUpdateRequest.TweetFiles.Any())
@@ -235,6 +267,7 @@ public class TweetServices : ITweetServices
             await _tweetRepositroy.UpdateAsync(tweet);
         });
 
-        return _mapper.Map<TweetResponse>(tweet);
+        return
+ _mapper.Map<TweetResponse>(tweet);
     }
 }

@@ -28,7 +28,6 @@ namespace SocialMediaApp.Core.Domain.Entites
         public ICollection<Comment> Replies { get; set; } = new List<Comment>();
         public ICollection<CommentFiles> Files { get; set; } = new List<CommentFiles>();
         public ICollection<Like> Likes { get; set; } = new List<Like>();
-        public ICollection<Retweet> Retweets { get; set; } = new List<Retweet>();
     }
 
 }

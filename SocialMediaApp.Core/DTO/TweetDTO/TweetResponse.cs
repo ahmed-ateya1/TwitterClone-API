@@ -17,8 +17,11 @@ namespace SocialMediaApp.Core.DTO.TweetDTO
         public string UserName { get; set; }
         public string FullName { get; set; }
         public string ProfilePictureURL { get; set; }
-        public string GenreName { get; set; }
+        public string? GenreName { get; set; }
         public bool IsLiked { get; set; }
         public List<string> FilesURL { get; set; } = new List<string>();
+        public Guid? ParentTweetID { get; set; }
+        public string? ParentTweetContent { get; set; }
+        public bool IsRetweeted { get; set; }
     }
 }

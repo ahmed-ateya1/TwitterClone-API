@@ -28,7 +28,6 @@ namespace SocialMediaApp.Infrastructure.Repositories
 
             _db.Entry(tweetToUpdate).CurrentValues.SetValues(tweetToUpdate);
             tweetToUpdate.UpdatedAt = DateTime.UtcNow;
-            tweetToUpdate.IsUpdated = true;
 
             await SaveAsync();
 

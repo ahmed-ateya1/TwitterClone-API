@@ -18,7 +18,6 @@ namespace SocialMediaApp.Infrastructure.Data
         public DbSet<Like> Likes { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Profile> Profiles { get; set; }
-        public DbSet<Retweet> Retweets { get; set; }
         public DbSet<Tweet> Tweets { get; set; }
         public DbSet<TweetFiles> TweetsFiles { get; set; }
         public DbSet<CommentFiles> CommentFiles { get; set; }
