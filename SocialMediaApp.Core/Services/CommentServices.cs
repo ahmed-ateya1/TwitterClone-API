@@ -62,31 +62,16 @@ namespace SocialMediaApp.Core.Services
 
             return userName;
         }
-        private async Task<SocialMediaApp.Core.Domain.Entites.Profile> GetCurrentProfileAsync()
+
+        private async Task<SocialMediaApp.Core.Domain.Entites.Profile?> GetProfileIfAvailable()
         {
             var userName = GetCurrentUserName();
+            if (userName == null) return null;
+
             var user = await _userManager.FindByNameAsync(userName);
-            if (user == null)
-                throw new UnauthorizedAccessException("User is not authenticated");
+            if (user == null) return null;
 
-            var profile = await _unitOfWork.Repository<SocialMediaApp.Core.Domain.Entites.Profile>().GetByAsync(x => x.User.Id == user.Id)
-                ?? throw new InvalidOperationException("Profile not found");
-
-            return profile;
-        }
-        private async Task<SocialMediaApp.Core.Domain.Entites.Profile> CheckProfile()
-        {
-            var userName = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!String.IsNullOrEmpty(userName))
-            {
-                var user = await _userManager.FindByNameAsync(userName);
-                if (user != null)
-                {
-                    var profile = await _unitOfWork.Repository<SocialMediaApp.Core.Domain.Entites.Profile>().GetByAsync(x => x.User.Id == user.Id);
-                    return profile;
-                }
-            }
-            return null;
+            return await _unitOfWork.Repository<SocialMediaApp.Core.Domain.Entites.Profile>().GetByAsync(x => x.User.Id == user.Id);
         }
         private async Task SetLikeStatusAsync(IEnumerable<CommentResponse> comments, Guid profileId)
         {
@@ -149,25 +134,19 @@ namespace SocialMediaApp.Core.Services
                 throw new InvalidOperationException("Tweet not found.");
             }
 
-            var userName = GetCurrentUserName();
-
+            var profile = await GetProfileIfAvailable();
+            if(profile == null)
+            {
+                throw new InvalidOperationException("Profile not found.");
+            }
             Comment comment = null;
 
             await ExecuteWithTransaction(async () =>
             {
-                var user = await _userManager.FindByNameAsync(userName);
-                if (user == null)
-                {
-                    throw new UnauthorizedAccessException("User is not authenticated.");
-                }
-
-                var profileUser = await _unitOfWork.Repository<Domain.Entites.Profile>()
-                    .GetByAsync(x => x.UserID == user.Id, isTracked: true, includeProperties: "User");
-
                 comment = _mapper.Map<Comment>(commentAddRequest);
                 comment.CommentID = Guid.NewGuid();
-                comment.ProfileID = profileUser.ProfileID;
-                comment.Profile = profileUser;
+                comment.ProfileID = profile.ProfileID;
+                comment.Profile = profile;
                 comment.CreatedAt = DateTime.UtcNow;
                 comment.UpdatedAt = DateTime.UtcNow;
 
@@ -258,7 +237,7 @@ namespace SocialMediaApp.Core.Services
         {
             var comments = await _unitOfWork.Repository<Comment>().GetAllAsync(predict, includeProperties: "Profile,Profile.User,Tweet,Files,Replies", null, pageIndex, pageSize);
             var result = _mapper.Map<IEnumerable<CommentResponse>>(comments);
-            var profile = await CheckProfile();
+            var profile = await GetProfileIfAvailable();
             if(profile!=null)
             {
                 await SetLikeStatusAsync(result, profile.ProfileID);
@@ -270,7 +249,7 @@ namespace SocialMediaApp.Core.Services
         {
             var comment = await _unitOfWork.Repository<Comment>().GetByAsync(predict, isTracked, includeProperties: "Profile,Profile.User,Tweet,Files,Replies");
             var result = _mapper.Map<CommentResponse>(comment);
-            var profile = await CheckProfile();
+            var profile = await GetProfileIfAvailable();
             if(profile != null)
             {
                 var like = await _unitOfWork.Repository<Like>().GetByAsync(x => x.CommentID == comment.CommentID && x.ProfileID == profile.ProfileID);
