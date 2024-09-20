@@ -12,7 +12,7 @@ namespace SocialMediaApp.Core.Domain.Entites
         public Guid FollowerID { get; set; }
         public Guid FollowedID { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public ICollection<ConnectionProfile> ConnectionProfiles { get; set; } = new List<ConnectionProfile>();
-        public ICollection<Profile> Profiles { get; set; } = new List<Profile>();
+        public Profile Profile { get; set; } 
+        public Guid ProfileId { get; set; }
     }
 }
