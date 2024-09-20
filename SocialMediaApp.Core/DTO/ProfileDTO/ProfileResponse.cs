@@ -22,5 +22,6 @@ namespace SocialMediaApp.Core.DTO.ProfileDTO
         public Guid UserID { get; set; }
         public string UserName { get; set; }
         public int Age { get; set; }
+        public bool IsFollowed { get; set; }
     }
 }

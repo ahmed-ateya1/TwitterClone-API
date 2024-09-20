@@ -42,8 +42,8 @@ public class ProfileConfiguration : IEntityTypeConfiguration<Profile>
 
 
         builder.HasMany(x => x.UserConnections)
-            .WithMany(x => x.Profiles)
-            .UsingEntity<ConnectionProfile>();
+            .WithOne(x => x.Profile)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.ToTable("Profiles");
     }

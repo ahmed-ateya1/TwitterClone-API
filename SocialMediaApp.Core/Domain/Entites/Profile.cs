@@ -27,7 +27,6 @@ namespace SocialMediaApp.Core.Domain.Entites
         public ICollection<Like> Likes { get; set; } = new List<Like>();
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
-        public ICollection<ConnectionProfile> ConnectionProfiles { get; set; } = new List<ConnectionProfile>();
         public ICollection<UserConnections> UserConnections { get; set; } = new List<UserConnections>();
     }
 }

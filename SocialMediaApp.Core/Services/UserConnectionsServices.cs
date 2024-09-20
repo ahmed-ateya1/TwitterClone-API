@@ -63,20 +63,21 @@ namespace SocialMediaApp.Core.Services
                 _logger.LogWarning("Faild in Follow service: The followed Id was followed before by the same user!");
                 throw new InvalidOperationException("You followed this profile before, so you can't follow it again!");
             }
-            ++follower.TotalFollowing;
-            ++followedUser.TotalFollowers;
 
             var newUserConnection = new UserConnections()
             {
                 FollowedID = followedId,
                 FollowerID = follower.ProfileID,
                 CreatedAt = DateTime.Now,
-                UserConnectionID = Guid.NewGuid()
+                UserConnectionID = Guid.NewGuid(),
+                ProfileId = follower.ProfileID
             };
             using (var transaction = await _unitOfWork.BeginTransactionAsync())
             {
                 try
                 {
+                    ++follower.TotalFollowing;
+                    ++followedUser.TotalFollowers;
                     var result = await _unitOfWork.Repository<UserConnections>().CreateAsync(newUserConnection);
                     await _unitOfWork.CompleteAsync();
                     await _unitOfWork.CommitTransactionAsync();
@@ -120,7 +121,9 @@ namespace SocialMediaApp.Core.Services
                     }
                     _logger.LogInformation("Get following successfully.");
                     await _unitOfWork.CommitTransactionAsync();
-                    return _mapper.Map<List<UserConnectionsResponse>>(FollowingProfiles);
+                    var response = _mapper.Map<List<UserConnectionsResponse>>(FollowingProfiles);
+                    response.ForEach(prop => prop.IsFollowed = true);
+                    return response;
                 }
                 catch (Exception ex)
                 {
@@ -132,6 +135,9 @@ namespace SocialMediaApp.Core.Services
         public async Task<List<UserConnectionsResponse>> GetUserFollowersAsync(Guid profileId, int? pageIndex, int? pageSize)
         {
             _logger.LogInformation($"Start Get user followers for profile : {profileId}");
+            var userName = GetCurrentUserName();
+            var user = await _userManager.FindByNameAsync(userName);
+            var loginUser = await _unitOfWork.Repository<Domain.Entites.Profile>().GetByAsync(prop => prop.ProfileID == profileId);
             var profile = await _unitOfWork.Repository<Domain.Entites.Profile>().GetByAsync(prop => prop.ProfileID == profileId);
             if (profile == null)
             {
@@ -148,15 +154,23 @@ namespace SocialMediaApp.Core.Services
                 try
                 {
                     var Connections = await _unitOfWork.Repository<UserConnections>().GetAllAsync(filter: prop => prop.FollowedID == profileId, orderBy: prop => prop.CreatedAt, pageIndex: (int)pageIndex, pageSize: (int)pageSize);
-                    var FollowingProfiles = new List<Domain.Entites.Profile>();
+                    var FollowersProfiles = new List<Domain.Entites.Profile>();
                     foreach (var person in Connections)
                     {
                         var result = await _unitOfWork.Repository<Domain.Entites.Profile>().GetByAsync(prop => prop.ProfileID == person.FollowerID, includeProperties: "User");
-                        FollowingProfiles.Add(result);
+                        FollowersProfiles.Add(result);
                     }
                     _logger.LogInformation("Get followers successfully.");
                     await _unitOfWork.CommitTransactionAsync();
-                    return _mapper.Map<List<UserConnectionsResponse>>(FollowingProfiles);
+                    var response = _mapper.Map<List<UserConnectionsResponse>>(FollowersProfiles);
+                    foreach (var item in FollowersProfiles)
+                    {
+                        if (item.ProfileID == loginUser.ProfileID)
+                        {
+                            response.FirstOrDefault(prop => prop.Id == item.ProfileID).IsFollowed = true;
+                        }
+                    }
+                    return response;
                 }
                 catch (Exception ex)
                 {
@@ -211,6 +225,14 @@ namespace SocialMediaApp.Core.Services
                     throw new InvalidOperationException("Error in Unfollow service UserConnections", ex);
                 }
             }
+        }
+        private string GetCurrentUserName()
+        {
+            var userName = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userName))
+                throw new UnauthorizedAccessException("User is not authenticated");
+
+            return userName;
         }
     }
 }

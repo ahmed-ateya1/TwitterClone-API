@@ -17,6 +17,8 @@ namespace SocialMediaApp.Infrastructure.Configuration
 
             builder.Property(x => x.UserConnectionID)
                 .ValueGeneratedNever();
+            builder.HasOne(x => x.Profile)
+                .WithMany(x => x.UserConnections);
 
             builder.ToTable("UserConnections");
         }

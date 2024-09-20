@@ -16,6 +16,7 @@ namespace SocialMediaApp.Core.MappingProfile
                 .ReverseMap();
 
             CreateMap<Domain.Entites.Profile, UserConnectionsResponse>()
+                .ForMember(dest => dest.Id, opt=> opt.MapFrom(prop => prop.ProfileID))
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(prop => prop.FullName))
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(prop=> prop.User.UserName))
                 .ForMember(dest => dest.Bio, opt => opt.MapFrom(prop => prop.Bio))

@@ -13,7 +13,6 @@ namespace SocialMediaApp.Infrastructure.Data
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
     {
         public DbSet<Comment> Comments { get; set; }
-        public DbSet<ConnectionProfile> ConnectionProfiles { get; set; }
         public DbSet<Genre> Genres { get; set; }
         public DbSet<Like> Likes { get; set; }
         public DbSet<Notification> Notifications { get; set; }
