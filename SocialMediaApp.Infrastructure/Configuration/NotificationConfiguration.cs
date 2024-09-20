@@ -16,20 +16,11 @@ namespace SocialMediaApp.Infrastructure.Configuration
             builder.HasKey(x => x.NotificationID);
             builder.Property(x => x.NotificationID)
                 .ValueGeneratedNever();
-            builder.Property(x => x.Title)
-                .HasMaxLength(150)
-                .IsRequired();
-
-            builder.Property(x => x.Content)
-               .IsRequired();
-
-            builder.Property(x => x.CreatedAt)
-                .IsRequired();
 
             builder.HasOne(x=>x.Profile)
                 .WithMany(x=>x.Notifications)
                 .HasForeignKey(x=>x.ProfileID)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.ToTable("Notifications");
         }

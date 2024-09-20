@@ -10,5 +10,6 @@ namespace SocialMediaApp.Core.RepositoriesContract
 {
     public interface INotificationRepository : IGenericRepository<Notification>
     {
+        Task<Notification> UpdateAsync(Notification notification);
     }
 }

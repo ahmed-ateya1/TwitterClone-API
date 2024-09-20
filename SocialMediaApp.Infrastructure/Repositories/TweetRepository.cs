@@ -26,7 +26,7 @@ namespace SocialMediaApp.Infrastructure.Repositories
                 throw new InvalidOperationException("Tweet not found");
 
 
-            _db.Entry(tweetToUpdate).CurrentValues.SetValues(tweetToUpdate);
+            _db.Entry(tweetToUpdate).CurrentValues.SetValues(tweet);
             tweetToUpdate.UpdatedAt = DateTime.UtcNow;
 
             await SaveAsync();

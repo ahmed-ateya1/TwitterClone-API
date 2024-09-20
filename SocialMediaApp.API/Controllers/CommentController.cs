@@ -218,6 +218,57 @@ namespace SocialMediaApp.API.Controllers
         }
 
         /// <summary>
+        /// Retrieves a comment by its ID.
+        /// </summary>
+        /// <param name="commentId">The ID of the comment.</param>
+        /// <returns>An API response containing the comment.</returns>
+        [HttpGet("getComment/{commentId}")]
+        public async Task<ActionResult<ApiResponse>> GetComment(Guid commentId)
+        {
+            if (commentId == Guid.Empty)
+            {
+                return BadRequest(new ApiResponse()
+                {
+                    IsSuccess = false,
+                    StatusCode = HttpStatusCode.BadRequest,
+                    Messages = "Comment ID is required"
+                });
+            }
+            try
+            {
+                var comment = await _commentServices.GetByAsync(x => x.CommentID == commentId);
+                if (comment == null)
+                {
+                    return BadRequest(new ApiResponse()
+                    {
+                        IsSuccess = false,
+                        StatusCode = HttpStatusCode.BadRequest,
+                        Messages = "Comment not found"
+                    });
+                }
+                return Ok(new ApiResponse()
+                {
+                    IsSuccess = true,
+                    StatusCode = HttpStatusCode.OK,
+                    Messages = "Comment found successfully",
+                    Result = comment
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                return StatusCode(500,
+                    new ApiResponse
+                    {
+                        IsSuccess = false,
+                        StatusCode = HttpStatusCode.InternalServerError,
+                        Messages = "Internal Server Error"
+                    }
+                );
+            }
+        }
+
+        /// <summary>
         /// Updates an existing comment.
         /// </summary>
         /// <param name="commentUpdate">The updated comment details.</param>

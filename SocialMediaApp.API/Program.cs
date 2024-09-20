@@ -33,6 +33,7 @@ namespace SocialMediaApp.API
                 endpoints.MapHub<CommentHub>("/commentHub"); 
                 endpoints.MapHub<UserConnectionHub>("/userConnectionHub");
                 endpoints.MapHub<LikeHub>("/likeHub");
+                endpoints.MapHub<NotificationHub>("/notificationHub");
             });
             app.Run();
         }

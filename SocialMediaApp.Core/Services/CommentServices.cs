@@ -7,7 +7,8 @@ using SocialMediaApp.Core.Domain.Entites;
 using SocialMediaApp.Core.Domain.IdentityEntites;
 using SocialMediaApp.Core.DTO.CommentDTO;
 using SocialMediaApp.Core.DTO.FilesCommentDTO;
-using SocialMediaApp.Core.DTO.TweetDTO;
+using SocialMediaApp.Core.DTO.NotificationDTO;
+using SocialMediaApp.Core.Enumeration;
 using SocialMediaApp.Core.Helper;
 using SocialMediaApp.Core.Hubs;
 using SocialMediaApp.Core.IUnitOfWorkConfig;
@@ -16,7 +17,6 @@ using SocialMediaApp.Core.ServicesContract;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace SocialMediaApp.Core.Services
 {
@@ -31,6 +31,7 @@ namespace SocialMediaApp.Core.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ICommentFilesServices _commentFilesServices;
         private readonly IHubContext<CommentHub> _commentHubContext;
+        private readonly IHubContext<NotificationHub> _notificationHubContext;
 
         public CommentServices(
             IUnitOfWork unitOfWork,
@@ -41,7 +42,8 @@ namespace SocialMediaApp.Core.Services
             UserManager<ApplicationUser> userManager,
             ICommentFilesServices commentFilesServices,
             ITweetRepositroy tweetRepositroy,
-            IHubContext<CommentHub> commentHubContext)
+            IHubContext<CommentHub> commentHubContext,
+            IHubContext<NotificationHub> notificationHubContext )
         {
             _unitOfWork = unitOfWork;
             _commentRepository = commentRepository;
@@ -52,6 +54,7 @@ namespace SocialMediaApp.Core.Services
             _commentFilesServices = commentFilesServices;
             _tweetRepositroy = tweetRepositroy;
             _commentHubContext = commentHubContext;
+            _notificationHubContext = notificationHubContext;
         }
 
         private string GetCurrentUserName()
@@ -62,7 +65,11 @@ namespace SocialMediaApp.Core.Services
 
             return userName;
         }
-
+        private string GetBaseUrl()
+        {
+            var request = _httpContextAccessor.HttpContext.Request;
+            return $"{request.Scheme}://{request.Host.Value}/api/";
+        }
         private async Task<SocialMediaApp.Core.Domain.Entites.Profile?> GetProfileIfAvailable()
         {
             var userName = GetCurrentUserName();
@@ -72,6 +79,23 @@ namespace SocialMediaApp.Core.Services
             if (user == null) return null;
 
             return await _unitOfWork.Repository<SocialMediaApp.Core.Domain.Entites.Profile>().GetByAsync(x => x.User.Id == user.Id);
+        }
+        private async Task SetNotification(NotificationAddRequest notificationAddRequest)
+        {
+
+            var notification = _mapper.Map<Notification>(notificationAddRequest);
+            notification.NotificationID = Guid.NewGuid();
+            notification.Profile = await GetProfileIfAvailable();
+            await _unitOfWork.Repository<Notification>().CreateAsync(notification);
+
+            var notificationResponse = _mapper.Map<NotificationResponse>(notification);
+
+            if (_notificationHubContext.Clients != null)
+            {
+                await _notificationHubContext.Clients.User(notificationAddRequest.ProfileID.ToString())
+                    .SendAsync("ReceiveNotification", notificationResponse);
+            }
+           
         }
         private async Task SetLikeStatusAsync(IEnumerable<CommentResponse> comments, Guid profileId)
         {
@@ -187,7 +211,14 @@ namespace SocialMediaApp.Core.Services
             {
                 commentResponse.Replies.AddRange(_mapper.Map<List<CommentResponse>>(comment.Replies));
             }
-            await _commentHubContext.Clients.All.SendAsync("ReceiveComment", commentResponse);
+            var notificationAddRequest = new NotificationAddRequest
+            {
+                Message = $"{profile.User.UserName} commented on your tweet: {tweet.Content}",
+                NotificationType = NotificationType.COMMENT,
+                ReferenceURL = $"{GetBaseUrl()}Tweet/getTweet/{tweet.TweetID}",
+                ProfileID = tweet.ProfileID
+            };
+            await SetNotification(notificationAddRequest);
             return commentResponse;
         }
 

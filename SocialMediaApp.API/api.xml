@@ -111,6 +111,13 @@
             <param name="commentId">The ID of the comment.</param>
             <returns>An API response containing the list of replies for the comment.</returns>
         </member>
+        <member name="M:SocialMediaApp.API.Controllers.CommentController.GetComment(System.Guid)">
+            <summary>
+            Retrieves a comment by its ID.
+            </summary>
+            <param name="commentId">The ID of the comment.</param>
+            <returns>An API response containing the comment.</returns>
+        </member>
         <member name="M:SocialMediaApp.API.Controllers.CommentController.UpdateComment(SocialMediaApp.Core.DTO.CommentDTO.CommentUpdateRequest)">
             <summary>
             Updates an existing comment.

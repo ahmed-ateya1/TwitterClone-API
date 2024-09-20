@@ -28,6 +28,11 @@ namespace SocialMediaApp.Infrastructure.Repositories
             await SaveAsync();
         }
 
+        public async Task<int> CountAsync(Expression<Func<T, bool>> filter)
+        {
+            return await _dbSet.CountAsync(filter);
+        }
+
         public async Task<T> CreateAsync(T model)
         {
             if (model == null)
