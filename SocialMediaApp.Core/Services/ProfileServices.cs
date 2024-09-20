@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using SocialMediaApp.Core.Domain.Entites;
@@ -43,6 +44,33 @@ namespace SocialMediaApp.Core.Services
             _profileRepository = profileRepository;
         }
 
+        private async Task SetFollowedStatus(IEnumerable<ProfileResponse> profiles, Guid profileID)
+        {
+            foreach (var profile in profiles)
+            {
+                profile.IsFollowed = await _unitOfWork.Repository<UserConnections>()
+                    .GetByAsync(x => x.FollowerID == profileID && x.FollowedID == profile.ProfileID) != null;
+            }
+        }
+
+        private string GetCurrentUserName()
+        {
+            var userName = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userName))
+                throw new UnauthorizedAccessException("User is not authenticated");
+
+            return userName;
+        }
+        private async Task<SocialMediaApp.Core.Domain.Entites.Profile?> GetProfileIfAvailable()
+        {
+            var userName = GetCurrentUserName();
+            if (userName == null) return null;
+
+            var user = await _userManager.FindByNameAsync(userName);
+            if (user == null) return null;
+
+            return await _unitOfWork.Repository<SocialMediaApp.Core.Domain.Entites.Profile>().GetByAsync(x => x.User.Id == user.Id);
+        }
         public async Task<ProfileResponse> CreateAsync(ProfileAddRequest profileAddRequest)
         {
             if (profileAddRequest == null)
@@ -167,8 +195,14 @@ namespace SocialMediaApp.Core.Services
 
         public async Task<IEnumerable<ProfileResponse>> GetAllAsync(int pageIndex = 1, int pageSize = 10)
         {
-            var profiles = await _unitOfWork.Repository<Domain.Entites.Profile>().GetAllAsync(null, "", null,pageIndex, pageSize);
-            return _mapper.Map<IEnumerable<ProfileResponse>>(profiles);
+            var profiles = await _unitOfWork.Repository<Domain.Entites.Profile>().GetAllAsync(includeProperties:"User",pageIndex:pageIndex,pageSize:pageSize);
+            var result =  _mapper.Map<IEnumerable<ProfileResponse>>(profiles);
+            var currentProfile = await GetProfileIfAvailable();
+            if (currentProfile != null)
+            {
+                await SetFollowedStatus(result, currentProfile.ProfileID);
+            }
+            return result;
         }
 
 
@@ -182,7 +216,16 @@ namespace SocialMediaApp.Core.Services
                 return null;
             }
 
-            return _mapper.Map<ProfileResponse>(profile);
+            var result = _mapper.Map<ProfileResponse>(profile);
+            var CurrentProfile = await GetProfileIfAvailable();
+            if(CurrentProfile!=null)
+            {
+                result.IsFollowed = await _unitOfWork.Repository<UserConnections>()
+                .GetByAsync(x => x.FollowedID == CurrentProfile.ProfileID 
+                && x.FollowerID == result.ProfileID) != null;
+            }
+            
+            return result;
         }
 
         public async Task<ProfileResponse> UpdateAsync(ProfileUpdateRequest profileUpdateRequest)

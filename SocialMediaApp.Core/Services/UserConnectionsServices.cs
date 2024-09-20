@@ -26,6 +26,7 @@ namespace SocialMediaApp.Core.Services
         private readonly IMapper _mapper;
         private readonly IHubContext<UserConnectionHub> _hubContext;
         private readonly IHubContext<NotificationHub> _notificationHub;
+
         public UserConnectionsServices(IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork, ILogger<UserConnectionsServices> logger, IMapper mapper, IHubContext<UserConnectionHub> hubContext, IHubContext<NotificationHub> notificationHub = null)
         {
             _httpContextAccessor = httpContextAccessor;
@@ -40,6 +41,32 @@ namespace SocialMediaApp.Core.Services
         {
             var request = _httpContextAccessor.HttpContext.Request;
             return $"{request.Scheme}://{request.Host.Value}/api/";
+        }
+        private async Task<SocialMediaApp.Core.Domain.Entites.Profile?> GetProfileIfAvailable()
+        {
+            var userName = GetCurrentUserName();
+            if (userName == null) return null;
+
+            var user = await _userManager.FindByNameAsync(userName);
+            if (user == null) return null;
+
+            return await _unitOfWork.Repository<SocialMediaApp.Core.Domain.Entites.Profile>().GetByAsync(x => x.User.Id == user.Id);
+        }
+        private async Task SetNotification(NotificationAddRequest notificationAddRequest)
+        {
+
+            var notification = _mapper.Map<Notification>(notificationAddRequest);
+            notification.NotificationID = Guid.NewGuid();
+            notification.Profile = await GetProfileIfAvailable();
+            await _unitOfWork.Repository<Notification>().CreateAsync(notification);
+
+            var notificationResponse = _mapper.Map<NotificationResponse>(notification);
+
+            if (_notificationHub.Clients != null)
+            {
+                await _notificationHub.Clients.User(notificationAddRequest.ProfileID.ToString())
+                    .SendAsync("ReceiveNotification", notificationResponse);
+            }
         }
         public async Task<FollowResponse> FollowAsync(Guid followedId)
         {
@@ -94,6 +121,7 @@ namespace SocialMediaApp.Core.Services
                         ProfileID = followedId,
                         ReferenceURL = $"{GetBaseUrl()}Profile/getProfile/{follower.ProfileID}",
                     };
+                    await SetNotification(notificationAdd);
                     return _mapper.Map<FollowResponse>(result); ;
                 }
                 catch (Exception ex)
