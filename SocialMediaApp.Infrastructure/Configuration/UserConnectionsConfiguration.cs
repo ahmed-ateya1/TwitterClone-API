@@ -18,7 +18,9 @@ namespace SocialMediaApp.Infrastructure.Configuration
             builder.Property(x => x.UserConnectionID)
                 .ValueGeneratedNever();
             builder.HasOne(x => x.Profile)
-                .WithMany(x => x.UserConnections);
+                .WithMany(x => x.UserConnections)
+                .HasForeignKey(x=>x.ProfileId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.ToTable("UserConnections");
         }

@@ -3,20 +3,17 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using Org.BouncyCastle.Asn1;
 using SocialMediaApp.Core.Domain.Entites;
 using SocialMediaApp.Core.Domain.IdentityEntites;
+using SocialMediaApp.Core.DTO.NotificationDTO;
 using SocialMediaApp.Core.DTO.UserConnectionsDTO;
 using SocialMediaApp.Core.Hubs;
 using SocialMediaApp.Core.IUnitOfWorkConfig;
 using SocialMediaApp.Core.ServicesContract;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace SocialMediaApp.Core.Services
 {
@@ -28,7 +25,8 @@ namespace SocialMediaApp.Core.Services
         private readonly ILogger<UserConnectionsServices> _logger;
         private readonly IMapper _mapper;
         private readonly IHubContext<UserConnectionHub> _hubContext;
-        public UserConnectionsServices(IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork, ILogger<UserConnectionsServices> logger, IMapper mapper, IHubContext<UserConnectionHub> hubContext)
+        private readonly IHubContext<NotificationHub> _notificationHub;
+        public UserConnectionsServices(IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork, ILogger<UserConnectionsServices> logger, IMapper mapper, IHubContext<UserConnectionHub> hubContext, IHubContext<NotificationHub> notificationHub = null)
         {
             _httpContextAccessor = httpContextAccessor;
             _userManager = userManager;
@@ -36,8 +34,13 @@ namespace SocialMediaApp.Core.Services
             _logger = logger;
             _mapper = mapper;
             _hubContext = hubContext;
+            _notificationHub = notificationHub;
         }
-
+        private string GetBaseUrl()
+        {
+            var request = _httpContextAccessor.HttpContext.Request;
+            return $"{request.Scheme}://{request.Host.Value}/api/";
+        }
         public async Task<FollowResponse> FollowAsync(Guid followedId)
         {
             _logger.LogInformation("Start FollowAsync Service");
@@ -53,7 +56,7 @@ namespace SocialMediaApp.Core.Services
             if (user == null)
                 throw new InvalidOperationException("User not found");
 
-            var follower = await _unitOfWork.Repository<Domain.Entites.Profile>().GetByAsync(prop => prop.ProfileID == user.ProfileID);
+            var follower = await _unitOfWork.Repository<Domain.Entites.Profile>().GetByAsync(prop => prop.ProfileID == user.ProfileID,includeProperties:"User");
             if (follower == null)
                 throw new InvalidOperationException("follower not found");
 
@@ -70,7 +73,8 @@ namespace SocialMediaApp.Core.Services
                 FollowerID = follower.ProfileID,
                 CreatedAt = DateTime.Now,
                 UserConnectionID = Guid.NewGuid(),
-                ProfileId = follower.ProfileID
+                ProfileId = follower.ProfileID,
+                Profile = follower
             };
             using (var transaction = await _unitOfWork.BeginTransactionAsync())
             {
@@ -81,10 +85,16 @@ namespace SocialMediaApp.Core.Services
                     var result = await _unitOfWork.Repository<UserConnections>().CreateAsync(newUserConnection);
                     await _unitOfWork.CompleteAsync();
                     await _unitOfWork.CommitTransactionAsync();
-                    // signalR real time
                     await _hubContext.Clients.All.SendAsync("ReceiveFollowingUpdate",followedUser.TotalFollowing,followedUser.TotalFollowers);
                     _logger.LogInformation("Follow Service Done Successully.");
-                    return _mapper.Map<FollowResponse>(result);
+                    var notificationAdd = new NotificationAddRequest()
+                    {
+                        Message = $"{follower.User.UserName} started following you",
+                        NotificationType = Enumeration.NotificationType.FOLLOW,
+                        ProfileID = followedId,
+                        ReferenceURL = $"{GetBaseUrl()}Profile/getProfile/{follower.ProfileID}",
+                    };
+                    return _mapper.Map<FollowResponse>(result); ;
                 }
                 catch (Exception ex)
                 {

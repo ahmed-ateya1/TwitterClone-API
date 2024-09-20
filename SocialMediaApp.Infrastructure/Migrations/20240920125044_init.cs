@@ -64,20 +64,6 @@ namespace SocialMediaApp.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserConnections",
-                columns: table => new
-                {
-                    UserConnectionID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FollowerID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FollowedID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserConnections", x => x.UserConnectionID);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -236,37 +222,15 @@ namespace SocialMediaApp.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ConnectionProfiles",
-                columns: table => new
-                {
-                    ProfileID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserConnectionID = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ConnectionProfiles", x => new { x.ProfileID, x.UserConnectionID });
-                    table.ForeignKey(
-                        name: "FK_ConnectionProfiles_Profiles_ProfileID",
-                        column: x => x.ProfileID,
-                        principalTable: "Profiles",
-                        principalColumn: "ProfileID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ConnectionProfiles_UserConnections_UserConnectionID",
-                        column: x => x.UserConnectionID,
-                        principalTable: "UserConnections",
-                        principalColumn: "UserConnectionID",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Notifications",
                 columns: table => new
                 {
                     NotificationID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsRead = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    NotificationType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ReferenceURL = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ProfileID = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -277,7 +241,7 @@ namespace SocialMediaApp.Infrastructure.Migrations
                         column: x => x.ProfileID,
                         principalTable: "Profiles",
                         principalColumn: "ProfileID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -317,6 +281,27 @@ namespace SocialMediaApp.Infrastructure.Migrations
                         principalTable: "Tweets",
                         principalColumn: "TweetID",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserConnections",
+                columns: table => new
+                {
+                    UserConnectionID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    FollowerID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    FollowedID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ProfileId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserConnections", x => x.UserConnectionID);
+                    table.ForeignKey(
+                        name: "FK_UserConnections_Profiles_ProfileId",
+                        column: x => x.ProfileId,
+                        principalTable: "Profiles",
+                        principalColumn: "ProfileID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -488,11 +473,6 @@ namespace SocialMediaApp.Infrastructure.Migrations
                 column: "TweetID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ConnectionProfiles_UserConnectionID",
-                table: "ConnectionProfiles",
-                column: "UserConnectionID");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Likes_CommentID",
                 table: "Likes",
                 column: "CommentID");
@@ -537,6 +517,11 @@ namespace SocialMediaApp.Infrastructure.Migrations
                 name: "IX_Tweets_ProfileID",
                 table: "Tweets",
                 column: "ProfileID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserConnections_ProfileId",
+                table: "UserConnections",
+                column: "ProfileId");
         }
 
         /// <inheritdoc />
@@ -561,9 +546,6 @@ namespace SocialMediaApp.Infrastructure.Migrations
                 name: "CommentFiles");
 
             migrationBuilder.DropTable(
-                name: "ConnectionProfiles");
-
-            migrationBuilder.DropTable(
                 name: "Likes");
 
             migrationBuilder.DropTable(
@@ -576,10 +558,10 @@ namespace SocialMediaApp.Infrastructure.Migrations
                 name: "TweetFiles");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoles");
+                name: "UserConnections");
 
             migrationBuilder.DropTable(
-                name: "UserConnections");
+                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "Comments");
