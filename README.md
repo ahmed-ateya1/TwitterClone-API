@@ -101,3 +101,7 @@ Using **SignalR**, real-time updates are provided for:
 
 ### Logging:
 The application uses **Serilog** for structured logging. Logs capture errors, exceptions, and important events throughout the API.
+
+## Diagram:
+![image](https://github.com/user-attachments/assets/af1c2942-d321-478c-9fe8-798a42c34599)
+
