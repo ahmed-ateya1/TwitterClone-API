@@ -96,6 +96,8 @@ namespace SocialMediaApp.API.StartupExtensions
             services.AddScoped<ICommentFilesServices, CommentFilesServices>();
             services.AddScoped<ILikeRepository, LikeRepository>();
             services.AddScoped<ILikeServices, LikeServices>();
+            services.AddScoped<INotificationRepository, NotificationRepository>();
+            services.AddScoped<INotificationServices, NotificationServices>();
             services.AddAutoMapper(typeof(ProfileConfig));
             services.AddControllers();
             services.AddEndpointsApiExplorer();

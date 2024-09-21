@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SocialMediaApp.Core.Domain.Entites;
 using SocialMediaApp.Core.Domain.IdentityEntites;
@@ -92,7 +93,6 @@ namespace SocialMediaApp.Core.Services
 
         private async Task SetNotification(NotificationAddRequest notificationAddRequest)
         {
-
             var notification = _mapper.Map<Notification>(notificationAddRequest);
             notification.NotificationID = Guid.NewGuid();
             notification.Profile = await GetProfileIfAvailable();
@@ -102,12 +102,13 @@ namespace SocialMediaApp.Core.Services
 
             if (_notificationHubContext.Clients != null)
             {
-                await _notificationHubContext.Clients.User(notificationAddRequest.ProfileID.ToString())
-                    .SendAsync("ReceiveNotification", notificationResponse);
+                var user = await _userManager.Users.FirstOrDefaultAsync(u => u.ProfileID == notificationAddRequest.ProfileID);
+                if (user != null)
+                {
+                    await _notificationHubContext.Clients.User(user.Id.ToString())
+                        .SendAsync("ReceiveNotification", notificationResponse);
+                }
             }
-
-            _logger.LogInformation("Notification sent successfully to user with ProfileID: {ProfileID}", notificationAddRequest.ProfileID);
-
         }
 
         private async Task ExecuteWithTransactionAsync(Func<Task> action)

@@ -274,4 +274,16 @@ public class TweetController : ControllerBase
             Messages = "Tweets found"
         });
     }
+    [HttpGet("getTweetsForSpecificGenre/{genreID}")]
+    public async Task<ActionResult<ApiResponse>> GetTweetsForSpecificGenre(Guid genreID, int pageIndex = 1, int pageSize = 10)
+    {
+        var tweets = await _tweetServices.GetAllAsync(x => x.GenreID == genreID, x => x.CreatedAt, pageIndex, pageSize);
+        return Ok(new ApiResponse
+        {
+            StatusCode = HttpStatusCode.OK,
+            IsSuccess = true,
+            Result = tweets,
+            Messages = "Tweets found"
+        });
+    }
 }

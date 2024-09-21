@@ -245,7 +245,7 @@
         </member>
         <member name="M:SocialMediaApp.API.Controllers.NotificationController.GetNotification(System.Guid)">
             <summary>
-            Retrieves a specific notification by its ID.
+            Retrieves a specific notification by its ID and mark this notification as readed
             </summary>
             <param name="notificationID">The ID of the notification to retrieve.</param>
             <returns>The notification with the specified ID.</returns>
