@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SocialMediaApp.Core.DTO;
 using SocialMediaApp.Core.ServicesContract;
 using System.Net;
@@ -10,6 +11,7 @@ namespace SocialMediaApp.API.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class NotificationController : ControllerBase
     {
         private readonly INotificationServices _notificationServices;

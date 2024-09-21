@@ -9,7 +9,7 @@ namespace SocialMediaApp.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class UserConnectionsController : ControllerBase
     {
         private readonly IUserConnectionsServices _userConnectionsServices;

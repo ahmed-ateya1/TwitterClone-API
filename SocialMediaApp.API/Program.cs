@@ -1,5 +1,6 @@
 using SocialMediaApp.API.StartupExtensions;
 using SocialMediaApp.Core.Hubs;
+using Stripe;
 
 namespace SocialMediaApp.API
 {
@@ -8,7 +9,6 @@ namespace SocialMediaApp.API
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
             builder.Services.ServiceConfiguration(builder.Configuration);
 
             var app = builder.Build();

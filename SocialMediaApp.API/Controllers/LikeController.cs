@@ -79,7 +79,7 @@ namespace SocialMediaApp.API.Controllers
         /// </summary>
         /// <param name="id">The ID of the tweet or comment to like.</param>
         /// <returns>The response containing the result of the unlike operation.</returns>
-        [HttpDelete("unlikeTweetOrComment/{profileId}")]
+        [HttpDelete("unlikeTweetOrComment/{id}")]
         public async Task<ActionResult<ApiResponse>> UnlikeTweetOrComment(Guid id)
         {
             if (id == Guid.Empty)

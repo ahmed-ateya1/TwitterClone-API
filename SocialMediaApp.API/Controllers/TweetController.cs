@@ -27,7 +27,7 @@ public class TweetController : ControllerBase
     }
 
     /// <summary>
-    /// Creates a new tweet.
+    /// Creates a new tweet Or Retweet existing tweet.
     /// </summary>
     /// <param name="tweetAddRequest">The tweet add request.</param>
     /// <returns>The created tweet.</returns>

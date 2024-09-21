@@ -18,6 +18,7 @@ using SocialMediaApp.Infrastructure.Repositories;
 using SocialMediaApp.Core.IUnitOfWorkConfig;
 using SocialMediaApp.Infrastructure.UnitOfWorkConfig;
 using SocialMediaApp.Core.MappingProfile;
+using Stripe;
 
 namespace SocialMediaApp.API.StartupExtensions
 {
@@ -25,6 +26,7 @@ namespace SocialMediaApp.API.StartupExtensions
     {
         public static IServiceCollection ServiceConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
+            StripeConfiguration.ApiKey = configuration["Stripe:SecretKey"];
             services.AddSignalR();
             services.AddDbContext<ApplicationDbContext>(options =>
             {
@@ -78,26 +80,26 @@ namespace SocialMediaApp.API.StartupExtensions
             services.Configure<JwtDTO>(configuration.GetSection("JWT"));
             services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
             services.AddTransient<IMailingService, MailingService>();
-
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IAuthenticationServices, AuthenticationServices>();
-            services.AddScoped<IFileServices, FileService>();
-            services.AddScoped<IProfileRepository, ProfileRepository>();
+            services.AddScoped<IFileServices, SocialMediaApp.API.FileServices.FileService>();
             services.AddScoped<IProfileServices, ProfileServices>();
-            services.AddScoped<IGenreRepository, GenreRepository>();
             services.AddScoped<IGenreServces, GenreServces>();
-            services.AddScoped<ITweetFilesRepository, TweetFilesRepository>();
             services.AddScoped<ITweetFilesServices, TweetFilesServices>();
             services.AddScoped<ITweetServices, TweetServices>();
-            services.AddScoped<ITweetRepositroy, TweetRepository>();
             services.AddScoped<IUserConnectionsServices, UserConnectionsServices>();
             services.AddScoped<ICommentServices, CommentServices>();
-            services.AddScoped<ICommentRepository, CommentRepository>();
             services.AddScoped<ICommentFilesServices, CommentFilesServices>();
-            services.AddScoped<ILikeRepository, LikeRepository>();
             services.AddScoped<ILikeServices, LikeServices>();
-            services.AddScoped<INotificationRepository, NotificationRepository>();
             services.AddScoped<INotificationServices, NotificationServices>();
+            services.AddScoped<IProfileRepository, ProfileRepository>();
+            services.AddScoped<IGenreRepository, GenreRepository>();
+            services.AddScoped<ITweetFilesRepository, TweetFilesRepository>();
+            services.AddScoped<ITweetRepositroy, TweetRepository>();
+            services.AddScoped<ICommentRepository, CommentRepository>();
+            services.AddScoped<ILikeRepository, LikeRepository>();
+            services.AddScoped<INotificationRepository, NotificationRepository>();
+
             services.AddAutoMapper(typeof(ProfileConfig));
             services.AddControllers();
             services.AddEndpointsApiExplorer();
