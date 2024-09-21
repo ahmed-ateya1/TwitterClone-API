@@ -12,6 +12,7 @@ Twitter Clone API is a fully functional backend API built using **ASP.NET Core**
 - **SignalR**: For real-time updates of likes, comments, notifications, followers, and more.
 - **Logging (Serilog)**: For structured logging and tracking system events.
 - **ASP.NET Identity**: For managing user roles and authentication.
+-  **Automapper**: for mapping many data properties for objects.
 
 ### Code Architecture:
 - **Clean Architecture**: To ensure a well-structured and maintainable codebase by following separation of concerns and dependency inversion principles.
