@@ -220,6 +220,58 @@
             <param name="id">The ID of the tweet or comment to check.</param>
             <returns>The response containing the result of the check.</returns>
         </member>
+        <member name="T:SocialMediaApp.API.Controllers.NotificationController">
+            <summary>
+            Controller to manage notifications for user profiles.
+            </summary>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.NotificationController.#ctor(SocialMediaApp.Core.ServicesContract.INotificationServices,Microsoft.Extensions.Logging.ILogger{SocialMediaApp.API.Controllers.NotificationController})">
+            <summary>
+            Initializes a new instance of the <see cref="T:SocialMediaApp.API.Controllers.NotificationController"/> class.
+            </summary>
+            <param name="notificationServices">Service to handle notification operations.</param>
+            <param name="logger">Logger instance for logging information.</param>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.NotificationController.GetNotificationsForProfile(System.Guid,System.Int32,System.Int32)">
+            <summary>
+            Retrieves notifications for a specific user profile.
+            </summary>
+            <param name="profileID">The ID of the profile to retrieve notifications for.</param>
+            <param name="pageIndex">The page index for pagination. Default is 1.</param>
+            <param name="pageSize">The number of items per page for pagination. Default is 10.</param>
+            <returns>A list of notifications for the specified profile.</returns>
+            <response code="200">Returns the list of notifications.</response>
+            <response code="500">If an error occurs while retrieving notifications.</response>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.NotificationController.GetNotification(System.Guid)">
+            <summary>
+            Retrieves a specific notification by its ID.
+            </summary>
+            <param name="notificationID">The ID of the notification to retrieve.</param>
+            <returns>The notification with the specified ID.</returns>
+            <response code="200">Returns the notification.</response>
+            <response code="404">If the notification is not found.</response>
+            <response code="500">If an error occurs while retrieving the notification.</response>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.NotificationController.DeleteNotification(System.Guid)">
+            <summary>
+            Deletes a specific notification by its ID.
+            </summary>
+            <param name="notificationID">The ID of the notification to delete.</param>
+            <returns>A response indicating whether the deletion was successful.</returns>
+            <response code="200">If the notification is deleted successfully.</response>
+            <response code="404">If the notification is not found.</response>
+            <response code="500">If an error occurs while deleting the notification.</response>
+        </member>
+        <member name="M:SocialMediaApp.API.Controllers.NotificationController.MarkAllAsRead(System.Guid)">
+            <summary>
+            Marks all notifications as read for a specific user profile.
+            </summary>
+            <param name="profileID">The ID of the profile whose notifications will be marked as read.</param>
+            <returns>A response indicating that all notifications have been marked as read.</returns>
+            <response code="200">If all notifications are marked as read successfully.</response>
+            <response code="500">If an error occurs while marking notifications as read.</response>
+        </member>
         <member name="T:SocialMediaApp.API.Controllers.ProfileController">
             <summary>
             Controller for managing user profiles.

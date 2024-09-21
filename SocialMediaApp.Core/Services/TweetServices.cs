@@ -208,6 +208,8 @@ public class TweetServices : ITweetServices
         int pageIndex = 1,
         int pageSize = 10)
     {
+        pageIndex = pageIndex <= 0 ? 1 : pageIndex;
+        pageSize = pageSize <= 0 ? 10 : pageSize;
         var tweets = await _unitOfWork.Repository<Tweet>().GetAllAsync(
             filter,
             "Profile,Profile.User,Genre,Files,ParentTweet,Retweets",

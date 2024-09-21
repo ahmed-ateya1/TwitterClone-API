@@ -45,8 +45,11 @@ namespace SocialMediaApp.Core.Services
                 }
             }
         }
-        public async Task MarkAsReadAsync(Guid notificationID)
+        public async Task MarkAsReadAsync(Guid? notificationID)
         {
+            if (notificationID == null)
+                throw new ArgumentNullException(nameof(notificationID));
+
             var notification = await _unitOfWork.Repository<Notification>().GetByAsync(n => n.NotificationID == notificationID);
             if (notification != null && !notification.IsRead)
             {
@@ -55,7 +58,19 @@ namespace SocialMediaApp.Core.Services
                 await _unitOfWork.CompleteAsync();
             }
         }
+        public async Task MarkAllAsReadAsync(Guid? profileID)
+        {
+            if (profileID == null)
+                throw new ArgumentNullException(nameof(profileID));
 
+            var notifications = await _unitOfWork.Repository<Notification>().GetAllAsync(n => n.ProfileID == profileID && !n.IsRead);
+            foreach (var notification in notifications)
+            {
+                notification.IsRead = true;
+                await _notificationRepository.UpdateAsync(notification);
+            }
+            await _unitOfWork.CompleteAsync();
+        }
         public async Task<int> GetUnreadNotificationCount(Guid profileID)
         {
             return await _unitOfWork.Repository<Notification>()
@@ -110,7 +125,7 @@ namespace SocialMediaApp.Core.Services
                 IsTracked,
                 includeProperties: "Profile,Profile.User"
             );
-
+            await MarkAsReadAsync(notification.NotificationID);
             return _mapper.Map<NotificationResponse>(notification);
         }
     }

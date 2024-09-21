@@ -13,7 +13,8 @@ namespace SocialMediaApp.Core.ServicesContract
     {
         Task<int> GetUnreadNotificationCount(Guid profileID);
         Task<NotificationResponse> CreateNotification(NotificationAddRequest notificationAddRequest);
-        Task MarkAsReadAsync(Guid notificationID);
+        Task MarkAsReadAsync(Guid? notificationID);
+        Task MarkAllAsReadAsync(Guid? profileID);
         Task<bool> DeleteAsync(Guid? notificationID);
         Task<NotificationResponse> GetByAsync(Expression<Func<Notification, bool>> predicate , bool IsTracked = true);
         Task<IEnumerable<NotificationResponse>> GetAllAsync(Expression<Func<Notification, bool>>? predicate,int pageSize=1 , int pageIndex=10);

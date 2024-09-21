@@ -195,6 +195,8 @@ namespace SocialMediaApp.Core.Services
 
         public async Task<IEnumerable<ProfileResponse>> GetAllAsync(int pageIndex = 1, int pageSize = 10)
         {
+            pageIndex = pageIndex <= 0 ? 1 : pageIndex;
+            pageSize = pageSize <= 0 ? 10 : pageSize;
             var profiles = await _unitOfWork.Repository<Domain.Entites.Profile>().GetAllAsync(includeProperties:"User",pageIndex:pageIndex,pageSize:pageSize);
             var result =  _mapper.Map<IEnumerable<ProfileResponse>>(profiles);
             var currentProfile = await GetProfileIfAvailable();

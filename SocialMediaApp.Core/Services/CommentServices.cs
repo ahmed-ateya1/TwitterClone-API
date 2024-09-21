@@ -17,6 +17,7 @@ using SocialMediaApp.Core.ServicesContract;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace SocialMediaApp.Core.Services
 {
@@ -188,6 +189,7 @@ namespace SocialMediaApp.Core.Services
                     comment.ParentCommentID = parentComment.CommentID;
 
                     parentComment.TotalComment++;
+                    await _commentHubContext.Clients.All.SendAsync("ReceiveTotalCommentUpdate", parentComment.CommentID, parentComment.TotalComment);
 
                     await _commentRepository.UpdateAsync(parentComment);
                 }
@@ -211,6 +213,8 @@ namespace SocialMediaApp.Core.Services
             {
                 commentResponse.Replies.AddRange(_mapper.Map<List<CommentResponse>>(comment.Replies));
             }
+            await _commentHubContext.Clients.All.SendAsync("ReceiveTotalCommentUpdate", tweet.TweetID, tweet.TotalComments);
+
             var notificationAddRequest = new NotificationAddRequest
             {
                 Message = $"{profile.User.UserName} commented on your tweet: {tweet.Content}",
@@ -228,15 +232,15 @@ namespace SocialMediaApp.Core.Services
 
             await ExecuteWithTransaction(async () =>
             {
-                var comment = await _unitOfWork.Repository<Comment>().GetByAsync(x => x.CommentID == commentID ,includeProperties:"Likes");
+                var comment = await _unitOfWork.Repository<Comment>().GetByAsync(x => x.CommentID == commentID, includeProperties: "Likes,Tweet");
                 if (comment == null)
                 {
                     throw new InvalidOperationException("Comment not found.");
                 }
 
                 var replies = await _unitOfWork.Repository<Comment>().GetAllAsync(c => c.ParentCommentID == comment.CommentID);
-                
-                if(replies.Any())
+
+                if (replies.Any())
                 {
                     await _unitOfWork.Repository<Comment>().RemoveRangeAsync(replies);
                 }
@@ -245,15 +249,26 @@ namespace SocialMediaApp.Core.Services
                 {
                     await _commentFilesServices.DeleteTweetFileAsync(comment.Files);
                 }
-                if(comment.Likes.Any())
+                if (comment.Likes.Any())
                 {
                     await _unitOfWork.Repository<Like>().RemoveRangeAsync(comment.Likes);
                 }
+                if (comment.Tweet != null)
+                {
+                    comment.Tweet.TotalComments--;
+                    await _tweetRepositroy.UpdateAsync(comment.Tweet); 
+                }
+
                 result = await _unitOfWork.Repository<Comment>().DeleteAsync(comment);
 
                 if (result)
                 {
                     _logger.LogInformation("Comment deleted successfully: {commentID}", commentID);
+
+                    if (comment.Tweet != null)
+                    {
+                        await _commentHubContext.Clients.All.SendAsync("ReceiveTotalCommentUpdate", comment.Tweet.TweetID, comment.Tweet.TotalComments);
+                    }
                 }
                 else
                 {
@@ -264,8 +279,11 @@ namespace SocialMediaApp.Core.Services
             return result;
         }
 
+
         public async Task<IEnumerable<CommentResponse>> GetAllAsync(Expression<Func<Comment, bool>>? predict, int pageIndex = 1, int pageSize = 5)
         {
+            pageIndex = pageIndex <= 0 ? 1 : pageIndex;
+            pageSize = pageSize <= 0 ? 5 : pageSize;
             var comments = await _unitOfWork.Repository<Comment>().GetAllAsync(predict, includeProperties: "Profile,Profile.User,Tweet,Files,Replies", null, pageIndex, pageSize);
             var result = _mapper.Map<IEnumerable<CommentResponse>>(comments);
             var profile = await GetProfileIfAvailable();

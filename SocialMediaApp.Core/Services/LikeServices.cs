@@ -131,6 +131,8 @@ namespace SocialMediaApp.Core.Services
 
         public async Task<IEnumerable<LikeResponse>> GetAllAsync(Expression<Func<Like, bool>>? predicate, int pageIndex = 1, int pageSize = 10)
         {
+            pageIndex = pageIndex <= 0 ? 1 : pageIndex;
+            pageSize = pageSize <= 0 ? 10 : pageSize;
             _logger.LogInformation("Fetching likes with predicate: {Predicate}", predicate);
             var likes = await _unitOfWork.Repository<Like>().GetAllAsync(predicate, includeProperties: "Profile,Profile.User", pageIndex: pageIndex, pageSize: pageSize);
             return _mapper.Map<IEnumerable<LikeResponse>>(likes);
@@ -286,6 +288,7 @@ namespace SocialMediaApp.Core.Services
 
             return true;
         }
+
         public async Task<bool> IsLikeToAsync(Guid? id)
         {
             if (id == null)

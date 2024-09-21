@@ -21,9 +21,10 @@ namespace SocialMediaApp.Infrastructure.Repositories
 
         public async Task<Comment> UpdateAsync(Comment comment)
         {
-            var commentToUpdate =  await _db.Comments.FirstOrDefaultAsync(x => x.CommentID == comment.CommentID);
+            var commentToUpdate =  await _db.Comments
+                .FirstOrDefaultAsync(x => x.CommentID == comment.CommentID);
             if (commentToUpdate == null)
-                throw new ArgumentNullException("Comment not found");
+                throw new KeyNotFoundException("Comment not found");
 
             _db.Entry(commentToUpdate).CurrentValues.SetValues(comment);
             commentToUpdate.UpdatedAt = DateTime.UtcNow;
