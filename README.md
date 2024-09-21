@@ -1,8 +1,4 @@
-Here is a description and README for your "Tweeter Clone API" project:
-
----
-
-## Tweeter Clone API
+## Twitter Clone API
 
 ### Overview
 Tweeter Clone API is a fully functional backend API built using ASP.NET Core, designed to replicate key functionalities of Twitter. This API supports user authentication, tweet creation, commenting, liking, and real-time updates using SignalR. It is structured using clean architecture principles, ensuring maintainability, scalability, and separation of concerns.
