@@ -1,7 +1,7 @@
 ## Twitter Clone API
 
 ### Overview
-Tweeter Clone API is a fully functional backend API built using ASP.NET Core, designed to replicate key functionalities of Twitter. This API supports user authentication, tweet creation, commenting, liking, and real-time updates using SignalR. It is structured using clean architecture principles, ensuring maintainability, scalability, and separation of concerns.
+Twitter Clone API is a fully functional backend API built using **ASP.NET Core**, designed to replicate key functionalities of Twitter. This API supports user authentication, tweet creation, commenting, liking, and real-time updates using **SignalR**. It is structured using **Clean Architecture** principles, ensuring maintainability, scalability, and separation of concerns.
 
 ### Technologies Used:
 - **ASP.NET Core Web API**: Core framework for building the API.
@@ -9,14 +9,16 @@ Tweeter Clone API is a fully functional backend API built using ASP.NET Core, de
 - **SQL Server**: Relational database used for storing data.
 - **JWT & Refresh Token**: For secure user authentication and session management.
 - **LINQ**: Used for querying the database in a more readable manner.
-- **Clean Architecture**: To ensure a well-structured and maintainable codebase.
-- **N-Tier Architecture**: Separate layers for data access, business logic, and presentation.
-- **Onion Architecture**: Applied to manage dependency inversions and ensure a loosely coupled system.
-- **Unit of Work**: To manage transactions, ensuring data consistency.
-- **Generic Repository**: Provides a reusable way to perform CRUD operations.
-- **Logging (Serilog)**: For logging and tracking errors, exceptions, and system events.
 - **SignalR**: For real-time updates of likes, comments, notifications, followers, and more.
+- **Logging (Serilog)**: For structured logging and tracking system events.
 - **ASP.NET Identity**: For managing user roles and authentication.
+
+### Code Architecture:
+- **Clean Architecture**: To ensure a well-structured and maintainable codebase by following separation of concerns and dependency inversion principles.
+- **N-Tier Architecture**: Implementing separate layers for data access, business logic, and presentation.
+- **Onion Architecture**: Managing dependency inversions, ensuring a loosely coupled system.
+- **Unit of Work**: To manage transactions and ensure data consistency across operations.
+- **Generic Repository**: Provides a reusable way to perform CRUD operations.
 
 ### Features:
 - **User Authentication**: Registration, login, role management, and JWT-based authentication.
@@ -27,13 +29,13 @@ Tweeter Clone API is a fully functional backend API built using ASP.NET Core, de
 - **Profiles**: Users can manage their profiles with profile pictures and personal details.
 - **Notifications**: Real-time notification system for likes, comments, and followers.
 - **User Connections**: Follow and unfollow users with real-time follower updates.
-  
+
 ### Real-time Features:
-SignalR is used to update the following in real-time:
+Using **SignalR**, real-time updates are provided for:
 - Total comments on tweets.
 - Total likes on tweets and comments.
-- Total Unreaded notifications.
-- Followers and following updates.
+- Total unread notifications.
+- Follower and following updates.
 
 ### API Endpoints:
 
